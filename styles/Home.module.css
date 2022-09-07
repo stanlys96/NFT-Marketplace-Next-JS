@@ -1,5 +1,37 @@
 .container {
-  padding: 0 2rem;
+  padding: 0 3rem;
+  background-image: linear-gradient(to right, #984d38, #181e41);
+}
+
+/* Navbar */
+
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px 0;
+  /* height: 8vh; */
+}
+
+/* Collection */
+
+.collection {
+  height: 95vh;
+}
+
+.collection p {
+  text-align: center;
+}
+
+/* Nft Container */
+.nftContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 15px;
+}
+
+.container p {
+  margin: 0;
+  padding: 0;
 }
 
 .main {
