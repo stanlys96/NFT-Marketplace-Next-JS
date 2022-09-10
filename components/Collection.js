@@ -1,5 +1,5 @@
 import styles from '../styles/Home.module.css';
-import { Card, useNotification } from 'web3uikit';
+import NFTCard from './NFTCard';
 
 export default function Collection() {
   return (
@@ -7,7 +7,7 @@ export default function Collection() {
       <p>Collection</p>
       <p>Lorem ipsum dolor sit amet, consectetur</p>
       <div className={styles.nftContainer}>
-        {/* <Card title="Hello" description="Hello World" /> */}
+        <NFTCard />
       </div>
     </div>
   );

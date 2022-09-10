@@ -1,3 +1,4 @@
+import { ConnectButton } from 'web3uikit';
 import styles from '../styles/Home.module.css';
 
 export default function Header() {
@@ -8,7 +9,7 @@ export default function Header() {
       <a href="#">Collections</a>
       <a href="#">Feature</a>
       <a href="#">FAQ</a>
-      <button>Select Wallet</button>
+      <ConnectButton moralisAuth={false} />
     </nav>
   );
 }
