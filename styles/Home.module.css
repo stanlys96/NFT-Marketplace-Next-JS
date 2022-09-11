@@ -11,6 +11,10 @@
   color: #fffff8;
 }
 
+.nftFormContainer ::placeholder {
+  color: #fafafa;
+}
+
 .sellNftContainer {
   display: flex;
   flex-direction: column;
@@ -48,7 +52,8 @@
   width: 20vw;
 }
 
-.navbar input {
+.navbar input,
+.nftFormContainer input {
   background-color: transparent;
   border: 0px solid;
   color: #fff;
@@ -56,7 +61,8 @@
   margin-left: 5px;
 }
 
-.navbar input:focus {
+.navbar input:focus,
+.nftFormContainer input:focus {
   outline: none;
 }
 
@@ -159,6 +165,73 @@
 .innerNftCardValue {
   font-weight: bold;
 }
+
+/* Sell NFT */
+
+.sellNftContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+/* Nft Form */
+
+.sellNftForm input:-webkit-autofill,
+.sellNftForm input:-webkit-autofill:focus {
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+.sellNftForm input[data-autocompleted] {
+  background-color: transparent !important;
+}
+
+.sellNftForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+.nftFormContainer {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.nftFormContainer:nth-of-type(2) {
+  margin: 20px 0;
+}
+
+.nftFormContainer input {
+  width: 30vw;
+}
+
+.sellNftCaption {
+  padding-bottom: 20px;
+}
+
+.sellNftBtn {
+  background-image: linear-gradient(#b75cff, #671ae4);
+  border: 0px solid;
+  cursor: pointer;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 10px;
+  width: 100%;
+  margin-top: 25px;
+}
+
+/* Proceeds */
+
+.proceedsContainer {
+  color: #fff;
+  text-align: center;
+}
+
+/* General */
 
 .container p {
   margin: 0;

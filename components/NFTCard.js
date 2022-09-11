@@ -9,6 +9,7 @@ import networkMapping from '../constants/networkMapping.json';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
 import UpdateListingModal from './UpdateListingModal';
+import Swal from 'sweetalert2';
 
 const truncateStr = (fullStr, strLen) => {
   if (fullStr.length <= strLen) return fullStr;
@@ -41,6 +42,35 @@ export default function NFTCard({
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [modalEvent, setModalEvent] = useState('');
+  const [newPrice, setNewPrice] = useState('');
+  const alphabets = [
+    'a',
+    'b',
+    'c',
+    'd',
+    'e',
+    'f',
+    'g',
+    'h',
+    'i',
+    'j',
+    'k',
+    'l',
+    'm',
+    'n',
+    'o',
+    'p',
+    'q',
+    'r',
+    's',
+    't',
+    'u',
+    'v',
+    'w',
+    'x',
+    'y',
+    'z',
+  ];
   let counter = 0;
   const hideModal = () => {
     setShowModal(false);
@@ -150,6 +180,29 @@ export default function NFTCard({
     setUpdateCancel('updated');
   }
 
+  const { runContractFunction: updateListing } = useWeb3Contract({
+    abi: nftMarketplaceAbi,
+    contractAddress: marketplaceAddress,
+    functionName: 'updateListing',
+    params: {
+      nftAddress: nftAddress,
+      tokenId: tokenId,
+      newPrice: ethers.utils.parseEther(newPrice || '0'),
+    },
+  });
+
+  const handleUpdateListingSuccess = async (tx) => {
+    await tx.wait(1);
+    setNewPrice('0');
+    dispatch({
+      type: 'success',
+      message: 'listing updated',
+      title: 'Listing updated - please refresh (and move blocks)',
+      position: 'topR',
+    });
+    setUpdateCancel('updated');
+  };
+
   useEffect(() => {
     if (isWeb3Enabled) {
       updateUI();
@@ -157,14 +210,6 @@ export default function NFTCard({
   }, [isWeb3Enabled, modalEvent, updateCancel]);
   return (
     <div>
-      <UpdateListingModal
-        isVisible={showModal}
-        tokenId={tokenId}
-        marketplaceAddress={marketplaceAddress}
-        nftAddress={nftAddress}
-        onClose={hideModal}
-      />
-
       <div className={styles.nftCard}>
         <Image
           loader={() => imageURI}
@@ -194,8 +239,46 @@ export default function NFTCard({
         {seller.toLowerCase() === account.toLowerCase() ? (
           <div className={styles.innerCardNftBtnContainer}>
             <button
-              onClick={() => {
-                setShowModal(true);
+              onClick={async () => {
+                Swal.fire({
+                  title: 'Input new price',
+                  input: 'number',
+                  inputAttributes: { step: 1 },
+                  inputLabel: 'Your new price',
+                  inputPlaceholder: 'Enter your new price',
+                  showCancelButton: true,
+                  showLoaderOnConfirm: true,
+                  allowOutsideClick: false,
+                  inputValidator: (value) => {
+                    if (value.startsWith('.')) {
+                      return 'Invalid input!';
+                    }
+                    if (value === '') {
+                      return 'Cannot be empty or zero!';
+                    }
+                  },
+                  preConfirm: (thisNewPrice) => {
+                    setNewPrice(thisNewPrice);
+                    return runContractFunction({
+                      params: {
+                        abi: nftMarketplaceAbi,
+                        contractAddress: marketplaceAddress,
+                        functionName: 'updateListing',
+                        params: {
+                          nftAddress: nftAddress,
+                          tokenId: tokenId,
+                          newPrice: ethers.utils.parseEther(
+                            thisNewPrice || '0'
+                          ),
+                        },
+                      },
+                      onSuccess: handleUpdateListingSuccess,
+                      onError: (error) => console.log(error),
+                    });
+                  },
+                }).then(async (result) => {
+                  console.log(result);
+                });
               }}
               className={[styles.nftCardBtn, styles.nftBtnEditPrice].join(' ')}
             >

@@ -17,6 +17,7 @@
     "react-bootstrap": "^2.5.0",
     "react-dom": "18.2.0",
     "react-moralis": "^1.4.2",
+    "sweetalert2": "^11.4.32",
     "web3uikit": "^1.0.4"
   },
   "devDependencies": {

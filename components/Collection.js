@@ -51,10 +51,10 @@ export default function Collection() {
       <p className={styles.collectionDescription}>
         Lorem ipsum dolor sit amet, consectetur
       </p>
-      <div className={styles.nftContainer}>
+      <div className={nftList.length ? styles.nftContainer : ''}>
         {nftList.length === 0 ? (
           <div>
-            <span>No NFTs to display...</span>
+            <p className="text-center">No NFTs to display...</p>
           </div>
         ) : (
           nftList.map((data, index) => (
