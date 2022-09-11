@@ -4,10 +4,18 @@
   padding: 0 5rem;
   background-image: linear-gradient(to right, #984d38, #181e41);
   font-family: 'Poppins', sans-serif;
+  min-height: 90vh;
 }
 
 .navbar ::placeholder {
   color: #fffff8;
+}
+
+.sellNftContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Navbar */
@@ -19,6 +27,7 @@
   padding: 15px 0;
   height: 10vh;
   color: #fff;
+  background-image: linear-gradient(to right, #984d38, #181e41);
 }
 
 .navbarBtn {
@@ -56,6 +65,7 @@
 .collection {
   min-height: 90vh;
   color: #fff;
+  padding-bottom: 50px;
 }
 
 .collection p {
@@ -82,6 +92,13 @@
 }
 
 /* NFT Card */
+.innerCardNftBtnContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20px;
+  width: 100%;
+}
+
 .nftCard {
   background-color: rgba(255, 255, 255, 0.1);
   padding: 20px;
@@ -97,7 +114,11 @@
 }
 
 .innerNftCard:nth-child(3) {
-  margin: 20px 0;
+  margin-top: 10px;
+}
+
+.innerNftCard:nth-child(4) {
+  margin: 15px 0;
 }
 
 .nftCardImg {
@@ -119,6 +140,16 @@
   color: #fff;
   cursor: pointer;
   border: 0 solid;
+}
+
+.nftBtnEditPrice {
+  background-image: linear-gradient(#b75cff, #671ae4);
+  color: #fff;
+}
+
+.nftBtnCancel {
+  background-image: linear-gradient(#b75cff, #671ae4);
+  color: #fff;
 }
 
 .innerNftCardTransparent {
