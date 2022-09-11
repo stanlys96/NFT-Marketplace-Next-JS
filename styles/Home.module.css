@@ -1,6 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
 .container {
-  padding: 0 3rem;
+  padding: 0 5rem;
   background-image: linear-gradient(to right, #984d38, #181e41);
+  font-family: 'Poppins', sans-serif;
+}
+
+.navbar ::placeholder {
+  color: #fffff8;
 }
 
 /* Navbar */
@@ -8,30 +15,74 @@
 .navbar {
   display: flex;
   justify-content: space-around;
+  align-items: center;
   padding: 15px 0;
   height: 10vh;
+  color: #fff;
+}
+
+.navbarBtn {
+  background-image: linear-gradient(#b75cff, #671ae4);
+  border: 0px solid;
+  cursor: pointer;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 10px;
+}
+
+.navbarInputContainer {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  width: 20vw;
+}
+
+.navbar input {
+  background-color: transparent;
+  border: 0px solid;
+  color: #fff;
+  width: 100%;
+  margin-left: 5px;
+}
+
+.navbar input:focus {
+  outline: none;
 }
 
 /* Collection */
 
 .collection {
-  height: 90vh;
+  min-height: 90vh;
+  color: #fff;
 }
 
 .collection p {
   text-align: center;
 }
 
+.collectionTitle {
+  font-weight: bold;
+  font-size: 30px;
+  padding: 20px 0 !important;
+}
+
+.collectionDescription {
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 35px !important;
+}
+
 /* Nft Container */
 .nftContainer {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 15px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 30px;
 }
 
 /* NFT Card */
 .nftCard {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.1);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -67,6 +118,14 @@
   color: #fff;
   cursor: pointer;
   border: 0 solid;
+}
+
+.innerNftCardTransparent {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.innerNftCardValue {
+  font-weight: bold;
 }
 
 .container p {

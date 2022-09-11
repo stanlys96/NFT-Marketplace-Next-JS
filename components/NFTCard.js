@@ -7,16 +7,16 @@ export default function NFTCard() {
       <Image
         className={styles.nftCardImg}
         src="/img/bored_ape.jpeg"
-        width={250}
-        height={250}
+        width={200}
+        height={200}
       />
       <div className={styles.innerNftCard}>
-        <span>@Johny</span>
-        <span>Price</span>
+        <span className={styles.innerNftCardTransparent}>@Johny</span>
+        <span className={styles.innerNftCardTransparent}>Price</span>
       </div>
       <div className={styles.innerNftCard}>
-        <span>Monkey Business</span>
-        <span>0.025 ETH</span>
+        <span className={styles.innerNftCardValue}>Monkey Business</span>
+        <span className={styles.innerNftCardValue}>0.025 ETH</span>
       </div>
       <button className={styles.nftCardBtn}>Buy NFT</button>
     </div>
