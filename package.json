@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "moralis:sync": "moralis-admin-cli connect-local-devchain --chain hardhat --moralisSubdomain 32vrx5k53ryh.usemoralis.com --frpcPath ./frp/frpc"
   },
   "dependencies": {
     "bootstrap": "^5.2.0",
@@ -22,6 +23,7 @@
     "web3uikit": "^1.0.4"
   },
   "devDependencies": {
+    "dotenv": "^16.0.2",
     "eslint": "8.23.0",
     "eslint-config-next": "12.2.5",
     "react-icons": "^4.4.0",
