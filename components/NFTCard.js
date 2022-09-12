@@ -37,17 +37,10 @@ export default function NFTCard({
   const [imageURI, setImageURI] = useState('');
   const [tokenName, setTokenName] = useState('');
   const [tokenDescription, setTokenDescription] = useState('');
-  const chainString = chainId ? parseInt(chainId).toString() : '31337';
+  const chainString = chainId ? parseInt(chainId, 16).toString() : '31337';
   const router = useRouter();
-  const [showModal, setShowModal] = useState(false);
   const [modalEvent, setModalEvent] = useState('');
   const [newPrice, setNewPrice] = useState('');
-  let counter = 0;
-  const hideModal = () => {
-    setShowModal(false);
-    setUpdateCancel('updated' + counter.toString());
-    counter++;
-  };
 
   const { runContractFunction } = useWeb3Contract();
 
@@ -186,7 +179,7 @@ export default function NFTCard({
         <div className={styles.innerNftCard}>
           <span className={styles.innerNftCardTransparent}>
             Owned by:{' '}
-            {seller.toLowerCase() === account.toLowerCase()
+            {seller.toLowerCase() === (account ? account.toLowerCase() : '')
               ? 'You'
               : truncateStr(seller || '', 15)}
           </span>
@@ -201,7 +194,7 @@ export default function NFTCard({
             {ethers.utils.formatUnits(price, 'ether')} ETH
           </span>
         </div>
-        {seller.toLowerCase() === account.toLowerCase() ? (
+        {seller.toLowerCase() === (account ? account.toLowerCase() : '') ? (
           <div className={styles.innerCardNftBtnContainer}>
             <button
               onClick={async () => {

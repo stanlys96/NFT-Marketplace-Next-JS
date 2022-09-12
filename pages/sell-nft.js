@@ -17,7 +17,7 @@ const override = {
 
 export default function Home() {
   const router = useRouter();
-  const { chainId, account, isWeb3Enabled } = useMoralis();
+  const { chainId, account, isWeb3Enabled, Moralis } = useMoralis();
   const chainString = chainId ? parseInt(chainId, 16).toString() : '31337';
   const marketplaceAddress =
     chainString in networkMapping
@@ -142,7 +142,9 @@ export default function Home() {
 
   return (
     <div className={[styles.container, styles.sellNftContainer].join(' ')}>
-      {chainString in networkMapping ? (
+      {!account ? (
+        <p className={styles.chainError}>No account connected</p>
+      ) : chainString in networkMapping ? (
         <form className={styles.sellNftForm} onSubmit={approveAndList}>
           <label className={styles.sellNftCaption}>Sell your NFT!</label>
           <div className={styles.nftFormContainer}>
@@ -196,7 +198,9 @@ export default function Home() {
           switch to Rinkeby Testnet.
         </p>
       )}
-      {chainString in networkMapping ? (
+      {!account ? (
+        <div></div>
+      ) : chainString in networkMapping ? (
         <div className={styles.proceedsContainer}>
           <div>Withdraw {ethers.utils.formatUnits(proceeds, 'ether')} ETH</div>
           {proceeds != '0' ? (

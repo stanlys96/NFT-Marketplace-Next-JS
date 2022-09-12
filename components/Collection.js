@@ -8,10 +8,10 @@ import { useEffect, useState } from 'react';
 
 export default function Collection() {
   const { chainId, account, isWeb3Enabled, Moralis, network } = useMoralis();
-  const chainString = chainId ? parseInt(chainId, 16).toString() : '31337';
 
   const [nftList, setNftList] = useState([]);
   const [updateCancel, setUpdateCancel] = useState('update');
+  let chainString = chainId ? parseInt(chainId, 16).toString() : '31337';
   const marketplaceAddress =
     chainString in networkMapping
       ? networkMapping[chainString].NftMarketplace[
@@ -55,8 +55,9 @@ export default function Collection() {
 
   useEffect(() => {
     Moralis.onChainChanged((chain) => {
-      const hexadecimal = parseInt(chainString, 16);
-      if (hexadecimal.toString() in networkMapping) {
+      const hexadecimal = parseInt(chainId, 16);
+      chainString = hexadecimal.toString();
+      if (chainString in networkMapping) {
         getListData();
       } else {
         setNftList([]);
@@ -72,17 +73,23 @@ export default function Collection() {
       </p>
       <div
         className={
-          !chainString in networkMapping
+          !chainString in networkMapping || !account
             ? ''
             : nftList.length
             ? styles.nftContainer
             : ''
         }
       >
-        {chainString in networkMapping ? (
+        {!account ? (
+          <div>
+            <p className={styles.chainError}>
+              Please login with Metamask account
+            </p>
+          </div>
+        ) : chainString in networkMapping ? (
           nftList.length === 0 ? (
             <div>
-              <p className="text-center">No NFTs to display...</p>
+              <p className={styles.chainError}>No NFTs to display...</p>
             </div>
           ) : (
             nftList.map((data, index) => (
