@@ -46,7 +46,9 @@ export default function Collection() {
   useEffect(() => {
     if (isWeb3Enabled) {
       if (parseInt(chainId, 16).toString() in networkMapping) {
-        getListData();
+        if (marketplaceAddress !== '') {
+          getListData();
+        }
       } else {
         setNftList([]);
       }
@@ -58,7 +60,9 @@ export default function Collection() {
       const hexadecimal = parseInt(chainId, 16);
       chainString = hexadecimal.toString();
       if (chainString in networkMapping) {
-        getListData();
+        if (marketplaceAddress !== '') {
+          getListData();
+        }
       } else {
         setNftList([]);
       }
