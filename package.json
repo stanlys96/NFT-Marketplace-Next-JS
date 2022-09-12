@@ -17,11 +17,14 @@
     "react-bootstrap": "^2.5.0",
     "react-dom": "18.2.0",
     "react-moralis": "^1.4.2",
+    "react-spinners": "^0.13.4",
+    "sweetalert2": "^11.4.32",
     "web3uikit": "^1.0.4"
   },
   "devDependencies": {
     "eslint": "8.23.0",
     "eslint-config-next": "12.2.5",
-    "react-icons": "^4.4.0"
+    "react-icons": "^4.4.0",
+    "react-router-dom": "^6.3.0"
   }
 }
