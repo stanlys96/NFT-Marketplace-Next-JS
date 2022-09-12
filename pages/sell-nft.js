@@ -32,6 +32,7 @@ export default function Home() {
   const [formTokenId, setFormTokenId] = useState('');
   const [formPrice, setFormPrice] = useState('0');
   const [loading, setLoading] = useState(false);
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
 
   const { runContractFunction } = useWeb3Contract();
 
@@ -109,6 +110,7 @@ export default function Home() {
     });
     setLoading(false);
     setProceedsValue('WALAO');
+    setWithdrawLoading(false);
   };
 
   async function setupUI() {
@@ -206,7 +208,9 @@ export default function Home() {
           {proceeds != '0' ? (
             <button
               className={styles.sellNftBtn}
+              disabled={withdrawLoading}
               onClick={async () => {
+                setWithdrawLoading(true);
                 const result = await runContractFunction({
                   params: {
                     abi: nftMarketplaceAbi,
@@ -214,12 +218,19 @@ export default function Home() {
                     functionName: 'withdrawProceeds',
                     params: {},
                   },
-                  onError: (error) => console.log(error),
+                  onError: (error) => {
+                    console.log(error);
+                    setWithdrawLoading(false);
+                  },
                   onSuccess: handleWithdrawSuccess,
                 });
               }}
             >
-              Withdraw
+              {withdrawLoading ? (
+                <ClipLoader cssOverride={override} size={25} />
+              ) : (
+                'Withdraw'
+              )}
             </button>
           ) : (
             <div>No proceeds detected</div>

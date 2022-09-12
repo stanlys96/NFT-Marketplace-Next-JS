@@ -9,6 +9,13 @@ import networkMapping from '../constants/networkMapping.json';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
 import Swal from 'sweetalert2';
+import ClipLoader from 'react-spinners/ClipLoader';
+
+const override = {
+  display: 'block',
+  margin: '0 auto',
+  borderColor: 'red',
+};
 
 const truncateStr = (fullStr, strLen) => {
   if (fullStr.length <= strLen) return fullStr;
@@ -41,6 +48,9 @@ export default function NFTCard({
   const router = useRouter();
   const [modalEvent, setModalEvent] = useState('');
   const [newPrice, setNewPrice] = useState('');
+  const [buyItemLoading, setBuyItemLoading] = useState(false);
+  const [cancelListingLoading, setCancelListingLoading] = useState(false);
+  const [editPriceLoading, setEditPriceLoading] = useState(false);
 
   const { runContractFunction } = useWeb3Contract();
 
@@ -85,6 +95,7 @@ export default function NFTCard({
   }
 
   async function buyItem() {
+    setBuyItemLoading(true);
     const listOptions = {
       abi: nftMarketplaceAbi,
       contractAddress: marketplaceAddress,
@@ -99,11 +110,15 @@ export default function NFTCard({
     await runContractFunction({
       params: listOptions,
       onSuccess: handleBuySuccess,
-      onError: (error) => console.log(error),
+      onError: (error) => {
+        console.log(error);
+        setBuyItemLoading(false);
+      },
     });
   }
 
   async function cancelListing() {
+    setCancelListingLoading(true);
     const listOptions = {
       abi: nftMarketplaceAbi,
       contractAddress: marketplaceAddress,
@@ -117,7 +132,10 @@ export default function NFTCard({
     await runContractFunction({
       params: listOptions,
       onSuccess: handleCancelSuccess,
-      onError: (error) => console.log(error),
+      onError: (error) => {
+        console.log(error);
+        setCancelListingLoading(false);
+      },
     });
   }
 
@@ -133,6 +151,7 @@ export default function NFTCard({
       window.localStorage.setItem('handleCancel', 'true');
     }
     setUpdateCancel('updated');
+    setCancelListingLoading(false);
   }
 
   async function handleBuySuccess(tx) {
@@ -147,6 +166,7 @@ export default function NFTCard({
       window.localStorage.setItem('handleCancel', 'true');
     }
     setUpdateCancel('updated');
+    setBuyItemLoading(false);
   }
 
   const handleUpdateListingSuccess = async (tx) => {
@@ -159,6 +179,7 @@ export default function NFTCard({
       position: 'topR',
     });
     setUpdateCancel('updated');
+    setEditPriceLoading(false);
   };
 
   useEffect(() => {
@@ -198,6 +219,7 @@ export default function NFTCard({
           <div className={styles.innerCardNftBtnContainer}>
             <button
               onClick={async () => {
+                setEditPriceLoading(true);
                 Swal.fire({
                   title: 'Input new price',
                   input: 'number',
@@ -231,7 +253,10 @@ export default function NFTCard({
                         },
                       },
                       onSuccess: handleUpdateListingSuccess,
-                      onError: (error) => console.log(error),
+                      onError: (error) => {
+                        console.log(error);
+                        setEditPriceLoading(false);
+                      },
                     });
                     await res.wait(1);
                     return res;
@@ -241,16 +266,26 @@ export default function NFTCard({
                 });
               }}
               className={[styles.nftCardBtn, styles.nftBtnEditPrice].join(' ')}
+              disabled={editPriceLoading}
             >
-              Edit Price
+              {editPriceLoading ? (
+                <ClipLoader cssOverride={override} size={25} />
+              ) : (
+                'Edit Price'
+              )}
             </button>
             <button
               className={[styles.nftCardBtn, styles.nftBtnCancel].join(' ')}
               onClick={() => {
                 cancelListing();
               }}
+              disabled={cancelListingLoading}
             >
-              Cancel Listing
+              {cancelListingLoading ? (
+                <ClipLoader cssOverride={override} size={25} />
+              ) : (
+                'Cancel Listing'
+              )}
             </button>
           </div>
         ) : (
@@ -259,8 +294,13 @@ export default function NFTCard({
               buyItem();
             }}
             className={styles.nftCardBtn}
+            disabled={buyItemLoading}
           >
-            Buy NFT
+            {buyItemLoading ? (
+              <ClipLoader cssOverride={override} size={25} />
+            ) : (
+              'Buy NFT'
+            )}
           </button>
         )}
       </div>
