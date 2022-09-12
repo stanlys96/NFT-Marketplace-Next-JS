@@ -7,9 +7,14 @@ import { useMoralis, useWeb3Contract } from 'react-moralis';
 import { useEffect, useState } from 'react';
 
 export default function Collection() {
-  const { chainId, account, isWeb3Enabled, Moralis } = useMoralis();
+  const { chainId, account, isWeb3Enabled, Moralis, network } = useMoralis();
   const chainString = chainId ? parseInt(chainId).toString() : '31337';
-  const marketplaceAddress = networkMapping[chainString].NftMarketplace[0];
+  const marketplaceAddress =
+    chainString in networkMapping
+      ? networkMapping[chainString].NftMarketplace[
+          networkMapping[chainString].NftMarketplace.length - 1
+        ]
+      : '';
 
   const [nftList, setNftList] = useState([]);
   const [updateCancel, setUpdateCancel] = useState('update');
@@ -29,21 +34,33 @@ export default function Collection() {
       onSuccess: () => console.log('Success!'),
       onError: (error) => console.log(error),
     });
-    console.log(listData);
-    setNftList(
-      listData.filter((data) => {
-        return data.price.toString() !== '0';
-      })
-    );
+    if (listData) {
+      setNftList(
+        listData.filter((data) => {
+          return data.price.toString() !== '0';
+        })
+      );
+    }
   }
 
   useEffect(() => {
     console.log('!!!');
     if (isWeb3Enabled) {
       console.log('???');
-      getListData();
+      if (marketplaceAddress != '') {
+        getListData();
+      }
     }
   }, [isWeb3Enabled, updateCancel]);
+
+  useEffect(() => {
+    Moralis.onChainChanged((chain) => {
+      console.log(chain, ' <<<');
+      if (marketplaceAddress != '') {
+        getListData();
+      }
+    });
+  }, []);
 
   return (
     <div className={styles.collection}>
@@ -52,22 +69,31 @@ export default function Collection() {
         Lorem ipsum dolor sit amet, consectetur
       </p>
       <div className={nftList.length ? styles.nftContainer : ''}>
-        {nftList.length === 0 ? (
-          <div>
-            <p className="text-center">No NFTs to display...</p>
-          </div>
+        {chainString in networkMapping ? (
+          nftList.length === 0 ? (
+            <div>
+              <p className="text-center">No NFTs to display...</p>
+            </div>
+          ) : (
+            nftList.map((data, index) => (
+              <NFTCard
+                nftAddress={data.nftAddress}
+                tokenId={data.tokenId.toString()}
+                seller={data.seller}
+                price={data.price}
+                key={index}
+                setUpdateCancel={setUpdateCancel}
+                updateCancel={updateCancel}
+              />
+            ))
+          )
         ) : (
-          nftList.map((data, index) => (
-            <NFTCard
-              nftAddress={data.nftAddress}
-              tokenId={data.tokenId.toString()}
-              seller={data.seller}
-              price={data.price}
-              key={index}
-              setUpdateCancel={setUpdateCancel}
-              updateCancel={updateCancel}
-            />
-          ))
+          <div>
+            <p className="text-center">
+              The connected chain is not available on this marketplace. Please
+              switch to Rinkeby Testnet.
+            </p>
+          </div>
         )}
       </div>
     </div>

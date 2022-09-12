@@ -7,23 +7,37 @@ import nftMarketplaceAbi from '../constants/NftMarketplace.json';
 import networkMapping from '../constants/networkMapping.json';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import ClipLoader from 'react-spinners/ClipLoader';
+
+const override = {
+  display: 'block',
+  margin: '0 auto',
+  borderColor: 'red',
+};
 
 export default function Home() {
   const router = useRouter();
   const { chainId, account, isWeb3Enabled } = useMoralis();
   const chainString = chainId ? parseInt(chainId).toString() : '31337';
-  const marketplaceAddress = networkMapping[chainString].NftMarketplace[0];
+  const marketplaceAddress =
+    chainString in networkMapping
+      ? networkMapping[chainString].NftMarketplace[
+          networkMapping[chainString].NftMarketplace.length - 1
+        ]
+      : '';
   const dispatch = useNotification();
   const [proceeds, setProceeds] = useState('0');
   const [proceedsValue, setProceedsValue] = useState('0');
   const [formNftAddress, setFormNftAddress] = useState('');
   const [formTokenId, setFormTokenId] = useState('');
   const [formPrice, setFormPrice] = useState('0');
+  const [loading, setLoading] = useState(false);
 
   const { runContractFunction } = useWeb3Contract();
 
   async function approveAndList(e) {
     e.preventDefault();
+    setLoading(true);
     console.log('Approving...');
     const nftAddress = formNftAddress;
     const tokenId = formTokenId;
@@ -44,6 +58,7 @@ export default function Home() {
       onSuccess: () => handleApproveSuccess(nftAddress, tokenId, price),
       onError: (error) => {
         console.log(error);
+        setLoading(false);
       },
     });
   }
@@ -65,7 +80,10 @@ export default function Home() {
     await runContractFunction({
       params: listOptions,
       onSuccess: handleListSuccess,
-      onError: (error) => console.log(error),
+      onError: (error) => {
+        setLoading(false);
+        console.log(error);
+      },
     });
   }
 
@@ -77,6 +95,7 @@ export default function Home() {
       title: 'NFT listed',
       position: 'topR',
     });
+    setLoading(false);
     router.push('/');
   }
 
@@ -88,6 +107,7 @@ export default function Home() {
       message: 'Withdrawing proceeds',
       position: 'topR',
     });
+    setLoading(false);
     setProceedsValue('WALAO');
   };
 
@@ -101,16 +121,22 @@ export default function Home() {
           seller: account,
         },
       },
-      onError: (error) => console.log(error),
+      onError: (error) => {
+        console.log(error);
+        setLoading(false);
+      },
     });
     if (returnedProceeds) {
       setProceeds(returnedProceeds.toString());
+      setLoading(false);
     }
   }
 
   useEffect(() => {
     if (isWeb3Enabled) {
-      setupUI();
+      if (marketplaceAddress !== '') {
+        setupUI();
+      }
     }
   }, [proceeds, account, isWeb3Enabled, chainId, proceedsValue]);
 
@@ -155,7 +181,13 @@ export default function Home() {
             }}
           />
         </div>
-        <button className={styles.sellNftBtn}>Sell NFT</button>
+        <button className={styles.sellNftBtn} disabled={loading}>
+          {loading ? (
+            <ClipLoader cssOverride={override} size={25} />
+          ) : (
+            'Sell NFT'
+          )}
+        </button>
       </form>
       <div className={styles.proceedsContainer}>
         <div>Withdraw {ethers.utils.formatUnits(proceeds, 'ether')} ETH</div>

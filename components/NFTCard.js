@@ -8,7 +8,6 @@ import nftMarketplaceAbi from '../constants/NftMarketplace.json';
 import networkMapping from '../constants/networkMapping.json';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
-import UpdateListingModal from './UpdateListingModal';
 import Swal from 'sweetalert2';
 
 const truncateStr = (fullStr, strLen) => {
@@ -43,34 +42,6 @@ export default function NFTCard({
   const [showModal, setShowModal] = useState(false);
   const [modalEvent, setModalEvent] = useState('');
   const [newPrice, setNewPrice] = useState('');
-  const alphabets = [
-    'a',
-    'b',
-    'c',
-    'd',
-    'e',
-    'f',
-    'g',
-    'h',
-    'i',
-    'j',
-    'k',
-    'l',
-    'm',
-    'n',
-    'o',
-    'p',
-    'q',
-    'r',
-    's',
-    't',
-    'u',
-    'v',
-    'w',
-    'x',
-    'y',
-    'z',
-  ];
   let counter = 0;
   const hideModal = () => {
     setShowModal(false);
@@ -80,7 +51,12 @@ export default function NFTCard({
 
   const { runContractFunction } = useWeb3Contract();
 
-  const marketplaceAddress = networkMapping[chainString].NftMarketplace[0];
+  const marketplaceAddress =
+    chainString in networkMapping
+      ? networkMapping[chainString].NftMarketplace[
+          networkMapping[chainString].NftMarketplace.length - 1
+        ]
+      : '';
 
   const dispatch = useNotification();
 
@@ -179,17 +155,6 @@ export default function NFTCard({
     }
     setUpdateCancel('updated');
   }
-
-  const { runContractFunction: updateListing } = useWeb3Contract({
-    abi: nftMarketplaceAbi,
-    contractAddress: marketplaceAddress,
-    functionName: 'updateListing',
-    params: {
-      nftAddress: nftAddress,
-      tokenId: tokenId,
-      newPrice: ethers.utils.parseEther(newPrice || '0'),
-    },
-  });
 
   const handleUpdateListingSuccess = async (tx) => {
     await tx.wait(1);
