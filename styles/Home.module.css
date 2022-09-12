@@ -118,6 +118,31 @@
   justify-content: center;
   align-items: center;
   border-radius: 20px;
+  transition: all 0.5s;
+  /* cursor: pointer; */
+}
+
+.nftCard:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.nftCard:hover .nftCardBtn {
+  background-color: transparent;
+  background-image: linear-gradient(
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0)
+  );
+  color: #fff;
+  border: 2px solid transparent;
+  border-image: linear-gradient(#b75cff, #671ae4);
+  border-image-slice: 1;
+  border-radius: 10px;
+}
+
+.nftCard:hover .nftCardBuy {
+  background: linear-gradient(180deg, #b75cff, #671ae4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .innerNftCard:nth-child(2) {
@@ -147,10 +172,12 @@
   width: 100%;
   text-align: center;
   padding: 10px;
-  border-radius: 10px;
+  /* border-radius: 10px; */
   color: #fff;
   cursor: pointer;
-  border: 0 solid;
+  border: 2px solid transparent;
+  border-image: linear-gradient(#b75cff, #671ae4);
+  border-image-slice: 1;
 }
 
 .nftBtnEditPrice {

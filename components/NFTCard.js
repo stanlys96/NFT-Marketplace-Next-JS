@@ -299,7 +299,7 @@ export default function NFTCard({
             {buyItemLoading ? (
               <ClipLoader cssOverride={override} size={25} />
             ) : (
-              'Buy NFT'
+              <span className={styles.nftCardBuy}>Buy NFT</span>
             )}
           </button>
         )}
