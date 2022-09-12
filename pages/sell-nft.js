@@ -18,7 +18,7 @@ const override = {
 export default function Home() {
   const router = useRouter();
   const { chainId, account, isWeb3Enabled } = useMoralis();
-  const chainString = chainId ? parseInt(chainId).toString() : '31337';
+  const chainString = chainId ? parseInt(chainId, 16).toString() : '31337';
   const marketplaceAddress =
     chainString in networkMapping
       ? networkMapping[chainString].NftMarketplace[
@@ -142,77 +142,88 @@ export default function Home() {
 
   return (
     <div className={[styles.container, styles.sellNftContainer].join(' ')}>
-      <form className={styles.sellNftForm} onSubmit={approveAndList}>
-        <label className={styles.sellNftCaption}>Sell your NFT!</label>
-        <div className={styles.nftFormContainer}>
-          <input
-            type="text"
-            placeholder="NFT Address"
-            id="nftAddress"
-            name="nftAddress"
-            required
-            onChange={(event) => {
-              setFormNftAddress(event.target.value);
-            }}
-          />
-        </div>
-        <div className={styles.nftFormContainer}>
-          <input
-            type="text"
-            placeholder="Token ID"
-            id="tokenId"
-            name="tokenId"
-            required
-            onChange={(event) => {
-              setFormTokenId(event.target.value);
-            }}
-          />
-        </div>
-        <div className={styles.nftFormContainer}>
-          <input
-            type="number"
-            placeholder="Price"
-            id="price"
-            name="price"
-            step="0.1"
-            required
-            onChange={(event) => {
-              setFormPrice(event.target.value);
-            }}
-          />
-        </div>
-        <button className={styles.sellNftBtn} disabled={loading}>
-          {loading ? (
-            <ClipLoader cssOverride={override} size={25} />
-          ) : (
-            'Sell NFT'
-          )}
-        </button>
-      </form>
-      <div className={styles.proceedsContainer}>
-        <div>Withdraw {ethers.utils.formatUnits(proceeds, 'ether')} ETH</div>
-        {proceeds != '0' ? (
-          <button
-            className={styles.sellNftBtn}
-            onClick={async () => {
-              const result = await runContractFunction({
-                params: {
-                  abi: nftMarketplaceAbi,
-                  contractAddress: marketplaceAddress,
-                  functionName: 'withdrawProceeds',
-                  params: {},
-                },
-                onError: (error) => console.log(error),
-                onSuccess: handleWithdrawSuccess,
-              });
-            }}
-          >
-            Withdraw
+      {chainString in networkMapping ? (
+        <form className={styles.sellNftForm} onSubmit={approveAndList}>
+          <label className={styles.sellNftCaption}>Sell your NFT!</label>
+          <div className={styles.nftFormContainer}>
+            <input
+              type="text"
+              placeholder="NFT Address"
+              id="nftAddress"
+              name="nftAddress"
+              required
+              onChange={(event) => {
+                setFormNftAddress(event.target.value);
+              }}
+            />
+          </div>
+          <div className={styles.nftFormContainer}>
+            <input
+              type="text"
+              placeholder="Token ID"
+              id="tokenId"
+              name="tokenId"
+              required
+              onChange={(event) => {
+                setFormTokenId(event.target.value);
+              }}
+            />
+          </div>
+          <div className={styles.nftFormContainer}>
+            <input
+              type="number"
+              placeholder="Price"
+              id="price"
+              name="price"
+              step="0.1"
+              required
+              onChange={(event) => {
+                setFormPrice(event.target.value);
+              }}
+            />
+          </div>
+          <button className={styles.sellNftBtn} disabled={loading}>
+            {loading ? (
+              <ClipLoader cssOverride={override} size={25} />
+            ) : (
+              'Sell NFT'
+            )}
           </button>
-        ) : (
-          <div>No proceeds detected</div>
-        )}
-      </div>
+        </form>
+      ) : (
+        <p className={styles.chainError}>
+          The connected chain is not available on this marketplace. Please
+          switch to Rinkeby Testnet.
+        </p>
+      )}
+      {chainString in networkMapping ? (
+        <div className={styles.proceedsContainer}>
+          <div>Withdraw {ethers.utils.formatUnits(proceeds, 'ether')} ETH</div>
+          {proceeds != '0' ? (
+            <button
+              className={styles.sellNftBtn}
+              onClick={async () => {
+                const result = await runContractFunction({
+                  params: {
+                    abi: nftMarketplaceAbi,
+                    contractAddress: marketplaceAddress,
+                    functionName: 'withdrawProceeds',
+                    params: {},
+                  },
+                  onError: (error) => console.log(error),
+                  onSuccess: handleWithdrawSuccess,
+                });
+              }}
+            >
+              Withdraw
+            </button>
+          ) : (
+            <div>No proceeds detected</div>
+          )}
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }

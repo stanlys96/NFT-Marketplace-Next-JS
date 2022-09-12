@@ -8,16 +8,16 @@ import { useEffect, useState } from 'react';
 
 export default function Collection() {
   const { chainId, account, isWeb3Enabled, Moralis, network } = useMoralis();
-  const chainString = chainId ? parseInt(chainId).toString() : '31337';
+  const chainString = chainId ? parseInt(chainId, 16).toString() : '31337';
+
+  const [nftList, setNftList] = useState([]);
+  const [updateCancel, setUpdateCancel] = useState('update');
   const marketplaceAddress =
     chainString in networkMapping
       ? networkMapping[chainString].NftMarketplace[
           networkMapping[chainString].NftMarketplace.length - 1
         ]
       : '';
-
-  const [nftList, setNftList] = useState([]);
-  const [updateCancel, setUpdateCancel] = useState('update');
 
   const { runContractFunction } = useWeb3Contract();
 
@@ -32,7 +32,7 @@ export default function Collection() {
     const listData = await runContractFunction({
       params: listOptions,
       onSuccess: () => console.log('Success!'),
-      onError: (error) => console.log(error),
+      onError: (error) => console.log(error, ' !!!!<<<'),
     });
     if (listData) {
       setNftList(
@@ -44,20 +44,22 @@ export default function Collection() {
   }
 
   useEffect(() => {
-    console.log('!!!');
     if (isWeb3Enabled) {
-      console.log('???');
-      if (marketplaceAddress != '') {
+      if (parseInt(chainId, 16).toString() in networkMapping) {
         getListData();
+      } else {
+        setNftList([]);
       }
     }
-  }, [isWeb3Enabled, updateCancel]);
+  }, [isWeb3Enabled, updateCancel, chainId]);
 
   useEffect(() => {
     Moralis.onChainChanged((chain) => {
-      console.log(chain, ' <<<');
-      if (marketplaceAddress != '') {
+      const hexadecimal = parseInt(chainString, 16);
+      if (hexadecimal.toString() in networkMapping) {
         getListData();
+      } else {
+        setNftList([]);
       }
     });
   }, []);
@@ -68,7 +70,15 @@ export default function Collection() {
       <p className={styles.collectionDescription}>
         Lorem ipsum dolor sit amet, consectetur
       </p>
-      <div className={nftList.length ? styles.nftContainer : ''}>
+      <div
+        className={
+          !chainString in networkMapping
+            ? ''
+            : nftList.length
+            ? styles.nftContainer
+            : ''
+        }
+      >
         {chainString in networkMapping ? (
           nftList.length === 0 ? (
             <div>

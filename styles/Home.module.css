@@ -7,6 +7,11 @@
   min-height: 90vh;
 }
 
+.chainError {
+  text-align: center;
+  color: #fff;
+}
+
 .navbar ::placeholder {
   color: #fffff8;
 }

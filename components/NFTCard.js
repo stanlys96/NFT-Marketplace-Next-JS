@@ -222,9 +222,9 @@ export default function NFTCard({
                       return 'Cannot be empty or zero!';
                     }
                   },
-                  preConfirm: (thisNewPrice) => {
+                  preConfirm: async (thisNewPrice) => {
                     setNewPrice(thisNewPrice);
-                    return runContractFunction({
+                    const res = await runContractFunction({
                       params: {
                         abi: nftMarketplaceAbi,
                         contractAddress: marketplaceAddress,
@@ -240,6 +240,8 @@ export default function NFTCard({
                       onSuccess: handleUpdateListingSuccess,
                       onError: (error) => console.log(error),
                     });
+                    await res.wait(1);
+                    return res;
                   },
                 }).then(async (result) => {
                   console.log(result);
