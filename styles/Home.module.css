@@ -5,6 +5,7 @@
   background-image: linear-gradient(to right, #984d38, #181e41);
   font-family: 'Poppins', sans-serif;
   min-height: 90vh;
+  overflow: hidden;
 }
 
 .chainError {
