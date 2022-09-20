@@ -8,6 +8,7 @@ import networkMapping from '../constants/networkMapping.json';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ClipLoader from 'react-spinners/ClipLoader';
+import axios from 'axios';
 
 const override = {
   display: 'block',
@@ -33,6 +34,9 @@ export default function Home() {
   const [formPrice, setFormPrice] = useState('0');
   const [loading, setLoading] = useState(false);
   const [withdrawLoading, setWithdrawLoading] = useState(false);
+  const [imageURI, setImageURI] = useState('');
+  const [tokenName, setTokenName] = useState('');
+  const [tokenDescription, setTokenDescription] = useState('');
 
   const { runContractFunction } = useWeb3Contract();
 
@@ -89,7 +93,65 @@ export default function Home() {
   }
 
   async function handleListSuccess(tx) {
+    const tokenURI = await runContractFunction({
+      params: {
+        abi: nftAbi,
+        contractAddress: formNftAddress,
+        functionName: 'tokenURI',
+        params: {
+          tokenId: formTokenId,
+        },
+        onSuccess: () => console.log('success!'),
+        onError: (error) => {
+          console.log(error);
+        },
+      },
+    });
+    console.log(tokenURI, ' HEY <<<');
+    const url = 'https://server-nft-marketplace.herokuapp.com/insertItemListed';
+    let imageURIURLTemp = '';
+    let tokenNameTemp = '';
+    let tokenDescriptionTemp = '';
+    if (tokenURI) {
+      // IPFS Gateway: A server that will return IPFS files from a "normal" URL.
+      const requestURL = tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
+      const tokenURIResponse = await (await fetch(requestURL)).json();
+      const imageURI = tokenURIResponse.image;
+      const imageURIURL = imageURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
+      imageURIURLTemp = imageURIURL;
+      tokenNameTemp = tokenURIResponse.name;
+      tokenDescriptionTemp = tokenURIResponse.description;
+      setImageURI(imageURIURL);
+      setTokenName(tokenURIResponse.name);
+      setTokenDescription(tokenURIResponse.description);
+      // We could render the Image on our sever, and just call our sever.
+      // For testnets & mainnet -> use moralis server hooks
+      // Have the world adopt IPFS
+      // Build our own IPFS gateway
+    }
+    console.log(imageURIURLTemp, ' <??ASDASDASD');
     await tx.wait(1);
+    try {
+      // setLoading(true);
+      const response = await axios.post(url, {
+        nftAddress: formNftAddress,
+        tokenId: formTokenId,
+        price: formPrice,
+        seller: account,
+        imageUrl: imageURIURLTemp,
+        tokenName: tokenNameTemp,
+        tokenDescription: tokenDescriptionTemp,
+      });
+      if (response.status === 200) {
+        // setLoading(false);
+        console.log(response, ' <<<<');
+      } else {
+        // setLoading(false);
+      }
+    } catch (e) {
+      // setLoading(false);
+      console.log(e);
+    }
     dispatch({
       type: 'success',
       message: 'NFT listing',

@@ -39,11 +39,11 @@ export default function NFTCard({
   price,
   setUpdateCancel,
   updateCancel,
+  imageUrl,
+  tokenName,
+  tokenDescription,
 }) {
   const { isWeb3Enabled, account, chainId } = useMoralis();
-  const [imageURI, setImageURI] = useState('');
-  const [tokenName, setTokenName] = useState('');
-  const [tokenDescription, setTokenDescription] = useState('');
   const chainString = chainId ? parseInt(chainId, 16).toString() : '31337';
   const router = useRouter();
   const [modalEvent, setModalEvent] = useState('');
@@ -63,36 +63,8 @@ export default function NFTCard({
 
   const dispatch = useNotification();
 
-  const { runContractFunction: getTokenURI } = useWeb3Contract({
-    abi: nftAbi,
-    contractAddress: nftAddress,
-    functionName: 'tokenURI',
-    params: {
-      tokenId: tokenId,
-    },
-  });
-
-  async function updateUI() {
-    const tokenURI = await getTokenURI();
-    console.log(`The TokenURI is ${tokenURI}`);
-    // We are going to cheat a little here...
-    if (tokenURI) {
-      // IPFS Gateway: A server that will return IPFS files from a "normal" URL.
-      const requestURL = tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
-      const tokenURIResponse = await (await fetch(requestURL)).json();
-      const imageURI = tokenURIResponse.image;
-      const imageURIURL = imageURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
-      setImageURI(imageURIURL);
-      setTokenName(tokenURIResponse.name);
-      setTokenDescription(tokenURIResponse.description);
-      // We could render the Image on our sever, and just call our sever.
-      // For testnets & mainnet -> use moralis server hooks
-      // Have the world adopt IPFS
-      // Build our own IPFS gateway
-    }
-    // get the tokenURI
-    // using the image tag from the tokenURI, get the image
-  }
+  console.log(networkMapping, ' <<<<');
+  console.log(chainString in networkMapping, ' ????');
 
   async function buyItem() {
     setBuyItemLoading(true);
@@ -183,17 +155,17 @@ export default function NFTCard({
   };
 
   useEffect(() => {
-    if (isWeb3Enabled) {
-      updateUI();
-    }
+    // updateUI();
+    // if (isWeb3Enabled) {
+    // }
   }, [isWeb3Enabled, modalEvent, updateCancel]);
   return (
     <div>
       <div className={styles.nftCard}>
         <Image
-          loader={() => imageURI}
+          loader={() => imageUrl}
           className={styles.nftCardImg}
-          src={imageURI}
+          src={imageUrl}
           width={200}
           height={200}
         />
@@ -211,11 +183,13 @@ export default function NFTCard({
         </div>
         <div className={styles.innerNftCard}>
           <span className={styles.innerNftCardValue}>{tokenName}</span>
-          <span className={styles.innerNftCardValue}>
-            {ethers.utils.formatUnits(price, 'ether')} ETH
-          </span>
+          <span className={styles.innerNftCardValue}>{price} ETH</span>
         </div>
-        {seller.toLowerCase() === (account ? account.toLowerCase() : '') ? (
+        {chainString in networkMapping === false ? (
+          <p>Please connect to Rinkeby Testnet</p>
+        ) : !account ? (
+          <p>Please login with your metamask account</p>
+        ) : seller.toLowerCase() === (account ? account.toLowerCase() : '') ? (
           <div className={styles.innerCardNftBtnContainer}>
             <button
               onClick={async () => {
@@ -288,6 +262,10 @@ export default function NFTCard({
               )}
             </button>
           </div>
+        ) : chainString in networkMapping === false ? (
+          <p>Please connect to Rinkeby Testnet</p>
+        ) : !account ? (
+          <p>Please login with your metamask account</p>
         ) : (
           <button
             onClick={() => {

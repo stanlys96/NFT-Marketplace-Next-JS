@@ -1,5 +1,6 @@
 import styles from '../styles/Home.module.css';
 import NFTCard from './NFTCard';
+import axios from 'axios';
 import nftAbi from '../constants/BasicNft.json';
 import nftMarketplaceAbi from '../constants/NftMarketplace.json';
 import networkMapping from '../constants/networkMapping.json';
@@ -10,6 +11,7 @@ export default function Collection() {
   const { chainId, account, isWeb3Enabled, Moralis, network } = useMoralis();
 
   const [nftList, setNftList] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [updateCancel, setUpdateCancel] = useState('update');
   let chainString = chainId ? parseInt(chainId, 16).toString() : '31337';
   const marketplaceAddress =
@@ -22,51 +24,66 @@ export default function Collection() {
   const { runContractFunction } = useWeb3Contract();
 
   async function getListData() {
-    const listOptions = {
-      abi: nftMarketplaceAbi,
-      contractAddress: marketplaceAddress,
-      functionName: 'getCompleteListing',
-      params: {},
-    };
-
-    const listData = await runContractFunction({
-      params: listOptions,
-      onSuccess: () => console.log('Success!'),
-      onError: (error) => console.log(error, ' !!!!<<<'),
-    });
-    if (listData) {
-      setNftList(
-        listData.filter((data) => {
-          return data.price.toString() !== '0';
-        })
-      );
-    }
-  }
-
-  useEffect(() => {
-    if (isWeb3Enabled) {
-      if (parseInt(chainId, 16).toString() in networkMapping) {
-        if (marketplaceAddress !== '') {
-          getListData();
-        }
+    console.log('????');
+    const url = 'https://server-nft-marketplace.herokuapp.com/getActiveItems';
+    try {
+      setLoading(true);
+      const response = await axios({ url, method: 'GET' });
+      if (response.status === 200) {
+        setLoading(false);
+        console.log(response, ' <<<<');
+        setNftList(response.data);
       } else {
-        setNftList([]);
+        setLoading(false);
       }
+    } catch (e) {
+      setLoading(false);
+      console.log(e);
     }
+    // const listOptions = {
+    //   abi: nftMarketplaceAbi,
+    //   contractAddress: marketplaceAddress,
+    //   functionName: 'getCompleteListing',
+    //   params: {},
+    // };
+
+    // const listData = await runContractFunction({
+    //   params: listOptions,
+    //   onSuccess: () => console.log('Success!'),
+    //   onError: (error) => console.log(error, ' !!!!<<<'),
+    // });
+    // if (listData) {
+    //   setNftList(
+    //     listData.filter((data) => {
+    //       return data.price.toString() !== '0';
+    //     })
+    //   );
+    // }
+  }
+  useEffect(() => {
+    getListData();
+    // if (isWeb3Enabled) {
+    //   if (parseInt(chainId, 16).toString() in networkMapping) {
+    //     if (marketplaceAddress !== '') {
+    //     }
+    //   } else {
+    //     setNftList([]);
+    //   }
+    // }
   }, [isWeb3Enabled, updateCancel, chainId]);
 
   useEffect(() => {
-    Moralis.onChainChanged((chain) => {
-      const hexadecimal = parseInt(chainId, 16);
-      chainString = hexadecimal.toString();
-      if (chainString in networkMapping) {
-        if (marketplaceAddress !== '') {
-          getListData();
-        }
-      } else {
-        setNftList([]);
-      }
-    });
+    // Moralis.onChainChanged((chain) => {
+    //   const hexadecimal = parseInt(chainId, 16);
+    //   chainString = hexadecimal.toString();
+    //   if (chainString in networkMapping) {
+    //     if (marketplaceAddress !== '') {
+    //       getListData();
+    //     }
+    //   } else {
+    //     setNftList([]);
+    //   }
+    // });
   }, []);
 
   return (
@@ -77,44 +94,32 @@ export default function Collection() {
       </p>
       <div
         className={
-          !chainString in networkMapping || !account
+          !chainString in networkMapping
             ? ''
             : nftList.length
             ? styles.nftContainer
             : ''
         }
       >
-        {!account ? (
+        {nftList.length === 0 ? (
           <div>
-            <p className={styles.chainError}>
-              Please login with Metamask account
-            </p>
+            <p className={styles.chainError}>No NFTs to display...</p>
           </div>
-        ) : chainString in networkMapping ? (
-          nftList.length === 0 ? (
-            <div>
-              <p className={styles.chainError}>No NFTs to display...</p>
-            </div>
-          ) : (
-            nftList.map((data, index) => (
-              <NFTCard
-                nftAddress={data.nftAddress}
-                tokenId={data.tokenId.toString()}
-                seller={data.seller}
-                price={data.price}
-                key={index}
-                setUpdateCancel={setUpdateCancel}
-                updateCancel={updateCancel}
-              />
-            ))
-          )
         ) : (
-          <div>
-            <p className="text-center">
-              The connected chain is not available on this marketplace. Please
-              switch to Rinkeby Testnet.
-            </p>
-          </div>
+          nftList.map((data, index) => (
+            <NFTCard
+              nftAddress={data.nft_address}
+              tokenId={data.token_id.toString()}
+              seller={data.seller}
+              price={data.price}
+              key={index}
+              imageUrl={data.image_url}
+              tokenName={data.token_name}
+              tokenDescription={data.token_description}
+              setUpdateCancel={setUpdateCancel}
+              updateCancel={updateCancel}
+            />
+          ))
         )}
       </div>
     </div>
