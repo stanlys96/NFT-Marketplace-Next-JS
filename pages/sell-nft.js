@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ClipLoader from 'react-spinners/ClipLoader';
 import axios from 'axios';
+import { ClockLoader } from 'react-spinners';
+import Swal from 'sweetalert2';
 
 const override = {
   display: 'block',
@@ -43,29 +45,87 @@ export default function Home() {
   async function approveAndList(e) {
     e.preventDefault();
     setLoading(true);
-    console.log('Approving...');
-    const nftAddress = formNftAddress;
-    const tokenId = formTokenId;
-    const price = ethers.utils.parseUnits(formPrice, 'ether').toString();
-
-    const approveOptions = {
-      abi: nftAbi,
-      contractAddress: nftAddress,
-      functionName: 'approve',
-      params: {
-        to: marketplaceAddress,
-        tokenId: tokenId,
-      },
-    };
-
-    await runContractFunction({
-      params: approveOptions,
-      onSuccess: () => handleApproveSuccess(nftAddress, tokenId, price),
-      onError: (error) => {
-        console.log(error);
+    try {
+      const ownerOfTokenId = await runContractFunction({
+        params: {
+          abi: nftAbi,
+          contractAddress: formNftAddress,
+          functionName: "ownerOf",
+          params: {
+            tokenId: formTokenId,
+          }
+        },
+        onError: (error) => {
+          console.log(error, " <<< WALAO");
+          setLoading(false);
+        },
+      });
+      let tokenIdOwner = !ownerOfTokenId ? "" : ownerOfTokenId;
+      if (tokenIdOwner.toLowerCase() !== account.toLowerCase()) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'You are not the owner of the NFT!',
+        });
         setLoading(false);
-      },
-    });
+      } else {
+        const url = 'https://server-nft-marketplace.herokuapp.com/checkNftAddressTokenId';
+        let responseResult = [];
+        const response = await axios.post(url, {
+          nftAddress: formNftAddress,
+          tokenId: formTokenId,
+        });
+        if (response.status === 200) {
+          responseResult = response.data;
+          if (responseResult.length > 0) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'NFT Already Listed!',
+            });
+            setLoading(false);
+          } else {
+            console.log('Approving...');
+            const nftAddress = formNftAddress;
+            const tokenId = formTokenId;
+            const price = ethers.utils.parseUnits(formPrice, 'ether').toString();
+
+            const approveOptions = {
+              abi: nftAbi,
+              contractAddress: nftAddress,
+              functionName: 'approve',
+              params: {
+                to: marketplaceAddress,
+                tokenId: tokenId,
+              },
+            };
+
+            await runContractFunction({
+              params: approveOptions,
+              onSuccess: () => handleApproveSuccess(nftAddress, tokenId, price),
+              onError: (error) => {
+                console.log(error);
+                setLoading(false);
+              },
+            });
+          }
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "API Status Error!",
+          });
+          setLoading(false);
+        }
+      }
+    } catch (e) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: e.message,
+      });
+      setLoading(false);
+    }
   }
 
   async function handleApproveSuccess(nftAddress, tokenId, price) {
@@ -202,13 +262,11 @@ export default function Home() {
         setupUI();
       }
     }
-  }, [proceeds, account, isWeb3Enabled, chainId, proceedsValue]);
+  }, [proceeds, account, isWeb3Enabled, chainId, proceedsValue, chainId]);
 
   return (
     <div className={[styles.container, styles.sellNftContainer].join(' ')}>
-      {!account ? (
-        <p className={styles.chainError}>No account connected</p>
-      ) : chainString in networkMapping ? (
+      {
         <form className={styles.sellNftForm} onSubmit={approveAndList}>
           <label className={styles.sellNftCaption}>Sell your NFT!</label>
           <div className={styles.nftFormContainer}>
@@ -248,20 +306,16 @@ export default function Home() {
               }}
             />
           </div>
-          <button className={styles.sellNftBtn} disabled={loading}>
+          {!account ? <span className={styles.chainError}>No Account Connected</span> : chainString in networkMapping == false ? <span className={styles.chainError}>The connected chain is not available on this marketplace.<br/>Please
+              switch to Rinkeby Testnet.</span> : <button className={styles.sellNftBtn} disabled={loading}>
             {loading ? (
-              <ClipLoader cssOverride={override} size={25} />
-            ) : (
-              'Sell NFT'
+                <ClockLoader className={styles.chainErrorLoading} size={30} color="#36d7b7" />
+              ) : (
+              <span>Sell NFT</span>
             )}
-          </button>
+          </button>}
         </form>
-      ) : (
-        <p className={styles.chainError}>
-          The connected chain is not available on this marketplace. Please
-          switch to Rinkeby Testnet.
-        </p>
-      )}
+      }
       {!account ? (
         <div></div>
       ) : chainString in networkMapping ? (
@@ -289,7 +343,7 @@ export default function Home() {
               }}
             >
               {withdrawLoading ? (
-                <ClipLoader cssOverride={override} size={25} />
+                <ClockLoader className={styles.chainErrorLoading} size={30} color="#36d7b7" />
               ) : (
                 'Withdraw'
               )}

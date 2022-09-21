@@ -6,6 +6,7 @@ import nftMarketplaceAbi from '../constants/NftMarketplace.json';
 import networkMapping from '../constants/networkMapping.json';
 import { useMoralis, useWeb3Contract } from 'react-moralis';
 import { useEffect, useState } from 'react';
+import { BeatLoader } from 'react-spinners';
 
 export default function Collection() {
   const { chainId, account, isWeb3Enabled, Moralis, network } = useMoralis();
@@ -26,8 +27,8 @@ export default function Collection() {
   async function getListData() {
     console.log('????');
     const url = 'https://server-nft-marketplace.herokuapp.com/getActiveItems';
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await axios({ url, method: 'GET' });
       if (response.status === 200) {
         setLoading(false);
@@ -70,7 +71,7 @@ export default function Collection() {
     //     setNftList([]);
     //   }
     // }
-  }, [isWeb3Enabled, updateCancel, chainId]);
+  }, []);
 
   useEffect(() => {
     // Moralis.onChainChanged((chain) => {
@@ -101,7 +102,12 @@ export default function Collection() {
             : ''
         }
       >
-        {nftList.length === 0 ? (
+        {loading ? (
+          <div>
+            <BeatLoader className={styles.chainErrorLoading} color="#36d7b7" />
+            <p className={styles.chainError}>Loading NFTs... Please wait...</p>
+          </div>
+        ) : nftList.length === 0 ? (
           <div>
             <p className={styles.chainError}>No NFTs to display...</p>
           </div>

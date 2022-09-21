@@ -7,9 +7,24 @@
   min-height: 90vh;
 }
 
+.alignLeft {
+  /* text-align: left; */
+}
+
+.container::-webkit-scrollbar {
+  display: none;
+}
+
 .chainError {
+  padding-top: 20px;
   text-align: center;
   color: #fff;
+}
+
+.chainErrorLoading {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .navbar ::placeholder {
@@ -111,6 +126,7 @@
 }
 
 .nftCard {
+  position: relative;
   background-color: rgba(255, 255, 255, 0.1);
   padding: 20px;
   display: flex;
@@ -119,7 +135,7 @@
   align-items: center;
   border-radius: 20px;
   transition: all 0.5s;
-  /* cursor: pointer; */
+  cursor: pointer;
 }
 
 .nftCard:hover {

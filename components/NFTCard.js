@@ -9,7 +9,7 @@ import networkMapping from '../constants/networkMapping.json';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
 import Swal from 'sweetalert2';
-import ClipLoader from 'react-spinners/ClipLoader';
+import {ClipLoader, BeatLoader} from 'react-spinners';
 
 const override = {
   display: 'block',
@@ -63,16 +63,16 @@ export default function NFTCard({
 
   const dispatch = useNotification();
 
-  console.log(networkMapping, ' <<<<');
-  console.log(chainString in networkMapping, ' ????');
-
   async function buyItem() {
     setBuyItemLoading(true);
+    console.log(price.toString(), " <<<<<<");
+    const decimals = 18;
+    const bigNumberString = ethers.utils.parseUnits(price.toString(), decimals);
     const listOptions = {
       abi: nftMarketplaceAbi,
       contractAddress: marketplaceAddress,
       functionName: 'buyItem',
-      msgValue: price,
+      msgValue: bigNumberString,
       params: {
         nftAddress: nftAddress,
         tokenId: tokenId,
@@ -162,6 +162,22 @@ export default function NFTCard({
   return (
     <div>
       <div className={styles.nftCard}>
+        <div
+          onClick={() => {
+            Swal.fire({
+              title: 'NFT Details (Rinkeby Network)',
+              html: `<div class=${styles.alignLeft}><b>NFT Address:</b> ${nftAddress}<br/>
+                    <b>Token ID:</b> ${tokenId}<br/>
+                    <b>NFT Name:</b> ${tokenName}<br/>
+                    <b>Owned by:</b> ${seller}<br/>
+                    <b>Price:</b> ${price} ETH<br/>
+                    <b>Description:</b> ${tokenDescription}<div>`,
+              imageUrl: imageUrl,
+              imageWidth: 150,
+              imageHeight: 150,
+              imageAlt: 'Custom image',
+            })
+          }}>
         <Image
           loader={() => imageUrl}
           className={styles.nftCardImg}
@@ -184,6 +200,7 @@ export default function NFTCard({
         <div className={styles.innerNftCard}>
           <span className={styles.innerNftCardValue}>{tokenName}</span>
           <span className={styles.innerNftCardValue}>{price} ETH</span>
+          </div>
         </div>
         {chainString in networkMapping === false ? (
           <p>Please connect to Rinkeby Testnet</p>
@@ -193,7 +210,6 @@ export default function NFTCard({
           <div className={styles.innerCardNftBtnContainer}>
             <button
               onClick={async () => {
-                setEditPriceLoading(true);
                 Swal.fire({
                   title: 'Input new price',
                   input: 'number',
@@ -212,7 +228,9 @@ export default function NFTCard({
                     }
                   },
                   preConfirm: async (thisNewPrice) => {
+                    setEditPriceLoading(true);
                     setNewPrice(thisNewPrice);
+                    let cont = true;
                     const res = await runContractFunction({
                       params: {
                         abi: nftMarketplaceAbi,
@@ -228,11 +246,15 @@ export default function NFTCard({
                       },
                       onSuccess: handleUpdateListingSuccess,
                       onError: (error) => {
-                        console.log(error);
+                        console.log(error, " <<<<<????");
+                        cont = false;
                         setEditPriceLoading(false);
                       },
                     });
-                    await res.wait(1);
+                    console.log(res);
+                    if (cont) {
+                      await res.wait(1);
+                    }
                     return res;
                   },
                 }).then(async (result) => {
@@ -243,7 +265,7 @@ export default function NFTCard({
               disabled={editPriceLoading}
             >
               {editPriceLoading ? (
-                <ClipLoader cssOverride={override} size={25} />
+                <BeatLoader className={styles.chainErrorLoading} color="#36d7b7" />
               ) : (
                 'Edit Price'
               )}
@@ -256,7 +278,7 @@ export default function NFTCard({
               disabled={cancelListingLoading}
             >
               {cancelListingLoading ? (
-                <ClipLoader cssOverride={override} size={25} />
+                <BeatLoader className={styles.chainErrorLoading} color="#36d7b7" />
               ) : (
                 'Cancel Listing'
               )}
@@ -275,7 +297,7 @@ export default function NFTCard({
             disabled={buyItemLoading}
           >
             {buyItemLoading ? (
-              <ClipLoader cssOverride={override} size={25} />
+              <BeatLoader className={styles.chainErrorLoading} color="#36d7b7" />
             ) : (
               <span className={styles.nftCardBuy}>Buy NFT</span>
             )}
