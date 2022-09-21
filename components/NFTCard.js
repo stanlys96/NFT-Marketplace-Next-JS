@@ -9,7 +9,8 @@ import networkMapping from '../constants/networkMapping.json';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
 import Swal from 'sweetalert2';
-import {ClipLoader, BeatLoader} from 'react-spinners';
+import { ClipLoader, BeatLoader } from 'react-spinners';
+import axios from 'axios';
 
 const override = {
   display: 'block',
@@ -37,8 +38,7 @@ export default function NFTCard({
   tokenId,
   seller,
   price,
-  setUpdateCancel,
-  updateCancel,
+  handleSuccess,
   imageUrl,
   tokenName,
   tokenDescription,
@@ -47,7 +47,7 @@ export default function NFTCard({
   const chainString = chainId ? parseInt(chainId, 16).toString() : '31337';
   const router = useRouter();
   const [modalEvent, setModalEvent] = useState('');
-  const [newPrice, setNewPrice] = useState('');
+  const [newPrice, setNewPrice, getNewPrice] = useState('');
   const [buyItemLoading, setBuyItemLoading] = useState(false);
   const [cancelListingLoading, setCancelListingLoading] = useState(false);
   const [editPriceLoading, setEditPriceLoading] = useState(false);
@@ -65,7 +65,7 @@ export default function NFTCard({
 
   async function buyItem() {
     setBuyItemLoading(true);
-    console.log(price.toString(), " <<<<<<");
+    console.log(price.toString(), ' <<<<<<');
     const decimals = 18;
     const bigNumberString = ethers.utils.parseUnits(price.toString(), decimals);
     const listOptions = {
@@ -112,6 +112,27 @@ export default function NFTCard({
   }
 
   async function handleCancelSuccess(tx) {
+    const url = 'https://server-nft-marketplace.herokuapp.com/deleteActiveItem';
+    let newPriceTemp = 0;
+    try {
+      const response = await axios({
+        url,
+        method: 'DELETE',
+        data: {
+          nftAddress: nftAddress,
+          tokenId: tokenId,
+          price: price,
+          seller: seller,
+        },
+      });
+      if (response.status === 200) {
+        console.log(response, ' <<<<');
+      } else {
+        console.log('ERROR!');
+      }
+    } catch (e) {
+      console.log(e);
+    }
     await tx.wait(1);
     dispatch({
       type: 'success',
@@ -122,11 +143,31 @@ export default function NFTCard({
     if (typeof window != 'undefined') {
       window.localStorage.setItem('handleCancel', 'true');
     }
-    setUpdateCancel('updated');
+    handleSuccess();
     setCancelListingLoading(false);
   }
 
   async function handleBuySuccess(tx) {
+    const url = 'https://server-nft-marketplace.herokuapp.com/updateItemPrice';
+    try {
+      const response = await axios({
+        url,
+        method: 'PUT',
+        data: {
+          nftAddress: nftAddress,
+          tokenId: tokenId,
+          price: price,
+          seller: seller,
+        },
+      });
+      if (response.status === 200) {
+        console.log(response, ' <<<<');
+      } else {
+        console.log('ERROR!');
+      }
+    } catch (e) {
+      console.log(e);
+    }
     await tx.wait(1);
     dispatch({
       type: 'success',
@@ -137,11 +178,34 @@ export default function NFTCard({
     if (typeof window != 'undefined') {
       window.localStorage.setItem('handleCancel', 'true');
     }
-    setUpdateCancel('updated');
+    handleSuccess();
     setBuyItemLoading(false);
   }
 
-  const handleUpdateListingSuccess = async (tx) => {
+  const handleUpdateListingSuccess = async (tx, thisNewPrice) => {
+    const url = 'https://server-nft-marketplace.herokuapp.com/updateItemPrice';
+    // setLoading(true);
+    let newPriceTemp = 0;
+    try {
+      const response = await axios({
+        url,
+        method: 'PUT',
+        data: {
+          nftAddress: nftAddress,
+          tokenId: tokenId,
+          price: thisNewPrice,
+          seller: seller,
+        },
+      });
+      if (response.status === 200) {
+        console.log(response, ' <<<<');
+      } else {
+        console.log('ERROR!');
+        // setLoading(false);
+      }
+    } catch (e) {
+      console.log(e);
+    }
     await tx.wait(1);
     setNewPrice('0');
     dispatch({
@@ -150,7 +214,7 @@ export default function NFTCard({
       title: 'Listing updated - please refresh (and move blocks)',
       position: 'topR',
     });
-    setUpdateCancel('updated');
+    handleSuccess();
     setEditPriceLoading(false);
   };
 
@@ -158,7 +222,7 @@ export default function NFTCard({
     // updateUI();
     // if (isWeb3Enabled) {
     // }
-  }, [isWeb3Enabled, modalEvent, updateCancel]);
+  }, [isWeb3Enabled, modalEvent, newPrice]);
   return (
     <div>
       <div className={styles.nftCard}>
@@ -176,30 +240,31 @@ export default function NFTCard({
               imageWidth: 150,
               imageHeight: 150,
               imageAlt: 'Custom image',
-            })
-          }}>
-        <Image
-          loader={() => imageUrl}
-          className={styles.nftCardImg}
-          src={imageUrl}
-          width={200}
-          height={200}
-        />
-        <div className={styles.innerNftCard}>
-          <span className={styles.innerNftCardTransparent}>
-            Owned by:{' '}
-            {seller.toLowerCase() === (account ? account.toLowerCase() : '')
-              ? 'You'
-              : truncateStr(seller || '', 15)}
-          </span>
-        </div>
-        <div className={styles.innerNftCard}>
-          <span className={styles.innerNftCardTransparent}>NFT Name</span>
-          <span className={styles.innerNftCardTransparent}>Price</span>
-        </div>
-        <div className={styles.innerNftCard}>
-          <span className={styles.innerNftCardValue}>{tokenName}</span>
-          <span className={styles.innerNftCardValue}>{price} ETH</span>
+            });
+          }}
+        >
+          <Image
+            loader={() => imageUrl}
+            className={styles.nftCardImg}
+            src={imageUrl}
+            width={200}
+            height={200}
+          />
+          <div className={styles.innerNftCard}>
+            <span className={styles.innerNftCardTransparent}>
+              Owned by:{' '}
+              {seller.toLowerCase() === (account ? account.toLowerCase() : '')
+                ? 'You'
+                : truncateStr(seller || '', 15)}
+            </span>
+          </div>
+          <div className={styles.innerNftCard}>
+            <span className={styles.innerNftCardTransparent}>NFT Name</span>
+            <span className={styles.innerNftCardTransparent}>Price</span>
+          </div>
+          <div className={styles.innerNftCard}>
+            <span className={styles.innerNftCardValue}>{tokenName}</span>
+            <span className={styles.innerNftCardValue}>{price} ETH</span>
           </div>
         </div>
         {chainString in networkMapping === false ? (
@@ -244,9 +309,10 @@ export default function NFTCard({
                           ),
                         },
                       },
-                      onSuccess: handleUpdateListingSuccess,
+                      onSuccess: (tx) =>
+                        handleUpdateListingSuccess(tx, thisNewPrice),
                       onError: (error) => {
-                        console.log(error, " <<<<<????");
+                        console.log(error, ' <<<<<????');
                         cont = false;
                         setEditPriceLoading(false);
                       },
@@ -265,7 +331,10 @@ export default function NFTCard({
               disabled={editPriceLoading}
             >
               {editPriceLoading ? (
-                <BeatLoader className={styles.chainErrorLoading} color="#36d7b7" />
+                <BeatLoader
+                  className={styles.chainErrorLoading}
+                  color="#36d7b7"
+                />
               ) : (
                 'Edit Price'
               )}
@@ -278,7 +347,10 @@ export default function NFTCard({
               disabled={cancelListingLoading}
             >
               {cancelListingLoading ? (
-                <BeatLoader className={styles.chainErrorLoading} color="#36d7b7" />
+                <BeatLoader
+                  className={styles.chainErrorLoading}
+                  color="#36d7b7"
+                />
               ) : (
                 'Cancel Listing'
               )}
@@ -297,7 +369,10 @@ export default function NFTCard({
             disabled={buyItemLoading}
           >
             {buyItemLoading ? (
-              <BeatLoader className={styles.chainErrorLoading} color="#36d7b7" />
+              <BeatLoader
+                className={styles.chainErrorLoading}
+                color="#36d7b7"
+              />
             ) : (
               <span className={styles.nftCardBuy}>Buy NFT</span>
             )}

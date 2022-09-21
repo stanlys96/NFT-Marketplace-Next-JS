@@ -24,6 +24,15 @@ export default function Collection() {
 
   const { runContractFunction } = useWeb3Contract();
 
+  const handleSuccess = () => {
+    setUpdateCancel((state) => {
+      console.log('heyy');
+      console.log(state, ' <<<< STATE!');
+      const newData = state + '1';
+      return newData;
+    });
+  };
+
   async function getListData() {
     console.log('????');
     const url = 'https://server-nft-marketplace.herokuapp.com/getActiveItems';
@@ -71,7 +80,7 @@ export default function Collection() {
     //     setNftList([]);
     //   }
     // }
-  }, []);
+  }, [updateCancel]);
 
   useEffect(() => {
     // Moralis.onChainChanged((chain) => {
@@ -95,7 +104,7 @@ export default function Collection() {
       </p>
       <div
         className={
-          !chainString in networkMapping
+          !chainString in networkMapping || loading
             ? ''
             : nftList.length
             ? styles.nftContainer
@@ -122,8 +131,7 @@ export default function Collection() {
               imageUrl={data.image_url}
               tokenName={data.token_name}
               tokenDescription={data.token_description}
-              setUpdateCancel={setUpdateCancel}
-              updateCancel={updateCancel}
+              handleSuccess={handleSuccess}
             />
           ))
         )}
