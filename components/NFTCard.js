@@ -148,7 +148,7 @@ export default function NFTCard({
   }
 
   async function handleBuySuccess(tx) {
-    const url = 'https://server-nft-marketplace.herokuapp.com/updateItemPrice';
+    const url = 'https://server-nft-marketplace.herokuapp.com/updateItemSeller';
     try {
       const response = await axios({
         url,
@@ -157,7 +157,10 @@ export default function NFTCard({
           nftAddress: nftAddress,
           tokenId: tokenId,
           price: price,
-          seller: seller,
+          buyer: account,
+          imageUrl: imageUrl,
+          tokenName: tokenName,
+          tokenDescription: tokenDescription,
         },
       });
       if (response.status === 200) {
