@@ -341,7 +341,6 @@ export default function NFTCard({
               {editPriceLoading ? (
                 <BeatLoader
                   size={8}
-                  className={styles.chainErrorLoading}
                   color="#36d7b7"
                 />
               ) : (
@@ -358,7 +357,6 @@ export default function NFTCard({
               {cancelListingLoading ? (
                 <BeatLoader
                   size={8}
-                  className={styles.chainErrorLoading}
                   color="#36d7b7"
                 />
               ) : (
@@ -381,7 +379,6 @@ export default function NFTCard({
             {buyItemLoading ? (
               <BeatLoader
                 size={8}
-                className={styles.chainErrorLoading}
                 color="#36d7b7"
               />
             ) : (

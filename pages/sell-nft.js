@@ -355,7 +355,7 @@ export default function Home() {
               }}
             >
               {withdrawLoading ? (
-                <ClockLoader className={styles.chainErrorLoading} size={30} color="#36d7b7" />
+                <ClockLoader size={30} color="#36d7b7" />
               ) : (
                 'Withdraw'
               )}
