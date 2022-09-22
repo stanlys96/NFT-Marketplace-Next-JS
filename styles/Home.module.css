@@ -15,6 +15,11 @@
   overflow: hidden;
 }
 
+.swalParagraph {
+  padding: 0 0 7.5px;
+  margin: 0;
+}
+
 .alignLeft {
   /* text-align: left; */
 }

@@ -57,6 +57,7 @@ export default function Header() {
         <button
           onClick={async () => {
             const res = await enableWeb3();
+            console.log(res, "<<<<");
             if (!res) {
               Swal.fire({
                 title: "You don't have Metamask downloaded!",

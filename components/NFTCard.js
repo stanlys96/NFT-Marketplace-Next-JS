@@ -236,12 +236,12 @@ export default function NFTCard({
           onClick={() => {
             Swal.fire({
               title: 'NFT Details (Rinkeby Network)',
-              html: `<div class=${styles.alignLeft}><b>NFT Address:</b> ${nftAddress}<br/>
-                    <b>Token ID:</b> ${tokenId}<br/>
-                    <b>NFT Name:</b> ${tokenName}<br/>
-                    <b>Owned by:</b> ${seller}<br/>
-                    <b>Price:</b> ${price} ETH<br/>
-                    <b>Description:</b> ${tokenDescription}<div>`,
+              html: `<div class=${styles.alignLeft}><p class=${styles.swalParagraph}><b>NFT Address:</b> ${nftAddress}</p>
+                    <p class=${styles.swalParagraph}><b>Token ID:</b> ${tokenId}</p>
+                    <p class=${styles.swalParagraph}><b>NFT Name:</b> ${tokenName}</p>
+                    <p class=${styles.swalParagraph}><b>Owned by:</b> ${seller}</p>
+                    <p class=${styles.swalParagraph}><b>Price:</b> ${price} ETH</p>
+                    <p class=${styles.swalParagraph}><b>Description:</b> ${tokenDescription}</p><div>`,
               imageUrl: imageUrl,
               imageWidth: 150,
               imageHeight: 150,
