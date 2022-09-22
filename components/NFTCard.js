@@ -86,6 +86,21 @@ export default function NFTCard({
       onSuccess: handleBuySuccess,
       onError: (error) => {
         console.log(error);
+        if (error.data) {
+          if (error.data.message.slice(0, 18).toLowerCase() === "insufficient funds") {
+            Swal.fire({
+              title: 'Error!',
+              text: "Insufficient funds!",
+              scrollbarPadding: 0,
+            });
+          } else {
+            Swal.fire({
+              title: 'Error!',
+              text: error.data.message,
+              scrollbarPadding: 0,
+            });
+          }
+        }
         setBuyItemLoading(false);
       },
     });
