@@ -7,6 +7,11 @@
   min-height: 90vh;
 }
 
+.chainErrorLoadingCollection {
+  display: block;
+  margin: 0 auto;
+}
+
 .alignRight {
   display: block;
 }

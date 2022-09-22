@@ -113,7 +113,7 @@ export default function Collection() {
       >
         {loading ? (
           <div>
-            <BeatLoader className={styles.chainErrorLoading} color="#36d7b7" />
+            <BeatLoader className={styles.chainErrorLoadingCollection} color="#36d7b7" />
             <p className={styles.chainError}>Loading NFTs... Please wait...</p>
           </div>
         ) : nftList.length === 0 ? (
