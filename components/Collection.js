@@ -98,9 +98,9 @@ export default function Collection() {
 
   return (
     <div className={styles.collection}>
-      <p className={styles.collectionTitle}>Collection</p>
+      <p className={styles.collectionTitle}>NFT Collections!</p>
       <p className={styles.collectionDescription}>
-        Lorem ipsum dolor sit amet, consectetur
+        A platform for buying and selling NFTs!
       </p>
       <div
         className={

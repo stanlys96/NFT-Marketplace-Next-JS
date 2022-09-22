@@ -291,6 +291,7 @@ export default function NFTCard({
                   showCancelButton: true,
                   showLoaderOnConfirm: true,
                   allowOutsideClick: false,
+                  scrollbarPadding: 0,
                   inputValidator: (value) => {
                     if (value.startsWith('.')) {
                       return 'Invalid input!';
