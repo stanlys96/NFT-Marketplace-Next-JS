@@ -35,6 +35,8 @@ export default function Home() {
   const [formTokenId, setFormTokenId] = useState('');
   const [formPrice, setFormPrice] = useState('0');
   const [loading, setLoading] = useState(false);
+  const [approvingLoading, setApprovingLoading] = useState(false);
+  const [listingLoading, setListingLoading] = useState(false);
   const [withdrawLoading, setWithdrawLoading] = useState(false);
   const [imageURI, setImageURI] = useState('');
   const [tokenName, setTokenName] = useState('');
@@ -104,7 +106,7 @@ export default function Home() {
 
             await runContractFunction({
               params: approveOptions,
-              onSuccess: () => handleApproveSuccess(nftAddress, tokenId, price),
+              onSuccess: (tx) => handleApproveSuccess(tx, nftAddress, tokenId, price),
               onError: (error) => {
                 console.log(error);
                 setLoading(false);
@@ -130,7 +132,10 @@ export default function Home() {
     }
   }
 
-  async function handleApproveSuccess(nftAddress, tokenId, price) {
+  async function handleApproveSuccess(tx, nftAddress, tokenId, price) {
+    setApprovingLoading(true);
+    await tx.wait(1);
+    setApprovingLoading(false);
     console.log('Ok! Now time to list');
     console.log('Nice!');
     const listOptions = {
@@ -155,6 +160,7 @@ export default function Home() {
   }
 
   async function handleListSuccess(tx) {
+    setListingLoading(true);
     const tokenURI = await runContractFunction({
       params: {
         abi: nftAbi,
@@ -193,6 +199,7 @@ export default function Home() {
     }
     console.log(imageURIURLTemp, ' <??ASDASDASD');
     await tx.wait(1);
+    setListingLoading(false);
     try {
       // setLoading(true);
       const response = await axios.post(url, {
@@ -310,8 +317,11 @@ export default function Home() {
           </div>
           {!account ? <span className={styles.chainError}>No Account Connected</span> : chainString in networkMapping == false ? <span className={styles.chainError}>The connected chain is not available on this marketplace.<br/>Please
               switch to Rinkeby Testnet.</span> : <button className={styles.sellNftBtn} disabled={loading}>
-            {loading ? (
-                <ClockLoader className={styles.chainErrorLoading} size={30} color="#36d7b7" />
+              {loading ? (
+                <div className={styles.loadingContainer}>
+                  {listingLoading ? <p className={styles.alignRight}>Listing NFT... Please wait...</p> : approvingLoading ? <p className={styles.alignRight}>Approving NFT... Please wait...</p> : <div></div>}
+                  <ClockLoader className={listingLoading || approvingLoading ? styles.chainErrorLoading : ''} size={30} color="#36d7b7" />
+                </div>
               ) : (
               <span>Sell NFT</span>
             )}

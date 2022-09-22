@@ -7,6 +7,10 @@
   min-height: 90vh;
 }
 
+.alignRight {
+  display: block;
+}
+
 .textUnderline {
   border-bottom: 2px solid rgba(255, 255, 255, 0.5);;
 }
@@ -44,9 +48,7 @@
 }
 
 .chainErrorLoading {
-  display: block;
-  margin: 0 auto;
-  text-align: center;
+  margin-left: 10px;
 }
 
 .navbar ::placeholder {
@@ -276,6 +278,12 @@
   justify-content: center;
   align-items: center;
   color: #fff;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .nftFormContainer {
