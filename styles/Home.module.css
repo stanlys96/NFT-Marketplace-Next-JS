@@ -1,10 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
+html.swal2-shown,
+body.swal2-shown {
+  overflow: hidden !important;
+}
+
 .container {
   padding: 0 5rem;
   background-image: linear-gradient(to right, #984d38, #181e41);
   font-family: 'Poppins', sans-serif;
   min-height: 90vh;
+}
+
+.modal-open {
+  overflow: hidden;
 }
 
 .alignLeft {

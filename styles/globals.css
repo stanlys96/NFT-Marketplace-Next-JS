@@ -10,6 +10,11 @@ body {
   overflow-x: hidden;  */
 }
 
+html.swal2-shown,
+body.swal2-shown {
+  overflow: hidden !important;
+}
+
 body::-webkit-scrollbar {
   display: none;
 }

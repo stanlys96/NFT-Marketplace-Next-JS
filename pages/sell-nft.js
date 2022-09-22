@@ -61,6 +61,8 @@ export default function Home() {
         },
       });
       let tokenIdOwner = !ownerOfTokenId ? "" : ownerOfTokenId;
+      console.log(account);
+      console.log(tokenIdOwner, "<<<<<");
       if (tokenIdOwner.toLowerCase() !== account.toLowerCase()) {
         Swal.fire({
           icon: 'error',

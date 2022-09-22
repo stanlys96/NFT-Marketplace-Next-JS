@@ -72,12 +72,14 @@ export default function NFTCard({
       abi: nftMarketplaceAbi,
       contractAddress: marketplaceAddress,
       functionName: 'buyItem',
-      msgValue: bigNumberString,
+      msgValue: bigNumberString.toString(),
       params: {
         nftAddress: nftAddress,
         tokenId: tokenId,
       },
     };
+
+    console.log(bigNumberString.toString(), " <<<<<<< BIG NUMBER");
 
     await runContractFunction({
       params: listOptions,
@@ -114,6 +116,7 @@ export default function NFTCard({
   async function handleCancelSuccess(tx) {
     const url = 'https://server-nft-marketplace.herokuapp.com/deleteActiveItem';
     let newPriceTemp = 0;
+    await tx.wait(1);
     try {
       const response = await axios({
         url,
@@ -133,7 +136,6 @@ export default function NFTCard({
     } catch (e) {
       console.log(e);
     }
-    await tx.wait(1);
     dispatch({
       type: 'success',
       message: 'NFT canceled!',
@@ -149,6 +151,7 @@ export default function NFTCard({
 
   async function handleBuySuccess(tx) {
     const url = 'https://server-nft-marketplace.herokuapp.com/updateItemSeller';
+    await tx.wait(1);
     try {
       const response = await axios({
         url,
@@ -161,6 +164,7 @@ export default function NFTCard({
           imageUrl: imageUrl,
           tokenName: tokenName,
           tokenDescription: tokenDescription,
+          seller: seller,
         },
       });
       if (response.status === 200) {
@@ -171,7 +175,6 @@ export default function NFTCard({
     } catch (e) {
       console.log(e);
     }
-    await tx.wait(1);
     dispatch({
       type: 'success',
       message: 'NFT bought!',
@@ -189,6 +192,7 @@ export default function NFTCard({
     const url = 'https://server-nft-marketplace.herokuapp.com/updateItemPrice';
     // setLoading(true);
     let newPriceTemp = 0;
+    await tx.wait(1);
     try {
       const response = await axios({
         url,
@@ -209,7 +213,6 @@ export default function NFTCard({
     } catch (e) {
       console.log(e);
     }
-    await tx.wait(1);
     setNewPrice('0');
     dispatch({
       type: 'success',
