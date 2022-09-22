@@ -63,7 +63,7 @@ export default function Header() {
           }}
           className={styles.navbarBtn}
         >
-          Select Wallet
+          Metamask Login
         </button>
       )}
     </nav>
