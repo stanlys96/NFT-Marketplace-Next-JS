@@ -1,15 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
-html.swal2-shown,
-body.swal2-shown {
-  overflow: hidden !important;
-}
-
 .container {
   padding: 0 5rem;
   background-image: linear-gradient(to right, #984d38, #181e41);
   font-family: 'Poppins', sans-serif;
   min-height: 90vh;
+}
+
+.textUnderline {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);;
 }
 
 .modal-open {
@@ -18,6 +17,15 @@ body.swal2-shown {
 
 .alignLeft {
   /* text-align: left; */
+}
+
+.swal-text {
+  overflow: hidden;
+}
+
+.swal-alert,
+.swal2-shown {
+  overflow: hidden;
 }
 
 .container::-webkit-scrollbar {
@@ -154,11 +162,24 @@ body.swal2-shown {
     rgba(255, 255, 255, 0),
     rgba(255, 255, 255, 0)
   );
-  color: #fff;
   border: 2px solid transparent;
+  border-radius: 10px;
+}
+
+.nftCard:hover .nftBtnBuy {
   border-image: linear-gradient(#b75cff, #671ae4);
   border-image-slice: 1;
-  border-radius: 10px;
+  color: #fff;
+}
+
+.nftCard:hover .nftBtnCancel {
+  border-image: linear-gradient(#A71D31, #3F0D12);
+  border-image-slice: 1;
+}
+
+.nftCard:hover .nftBtnEditPrice {
+  border-image: linear-gradient(#FFDD00, #FBB034);
+  border-image-slice: 1;
 }
 
 .nftCard:hover .nftCardBuy {
@@ -190,7 +211,6 @@ body.swal2-shown {
 }
 
 .nftCardBtn {
-  background-image: linear-gradient(#b75cff, #671ae4);
   width: 100%;
   text-align: center;
   padding: 10px;
@@ -198,18 +218,24 @@ body.swal2-shown {
   color: #fff;
   cursor: pointer;
   border: 2px solid transparent;
+}
+
+.nftBtnBuy {
+  background-image: linear-gradient(#b75cff, #671ae4);
   border-image: linear-gradient(#b75cff, #671ae4);
   border-image-slice: 1;
 }
 
 .nftBtnEditPrice {
-  background-image: linear-gradient(#b75cff, #671ae4);
-  color: #fff;
+  background-image: linear-gradient(#FFDD00, #FBB034);
+  border-image: linear-gradient(#FFDD00, #FBB034);
+  border-image-slice: 1;
 }
 
 .nftBtnCancel {
-  background-image: linear-gradient(#b75cff, #671ae4);
-  color: #fff;
+  background-image: linear-gradient(#A71D31, #3F0D12);
+  border-image: linear-gradient(#A71D31, #3F0D12);
+  border-image-slice: 1;
 }
 
 .innerNftCardTransparent {

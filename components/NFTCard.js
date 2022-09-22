@@ -246,6 +246,7 @@ export default function NFTCard({
               imageWidth: 150,
               imageHeight: 150,
               imageAlt: 'Custom image',
+              scrollbarPadding: 0,
             });
           }}
         >
@@ -260,7 +261,7 @@ export default function NFTCard({
             <span className={styles.innerNftCardTransparent}>
               Owned by:{' '}
               {seller.toLowerCase() === (account ? account.toLowerCase() : '')
-                ? 'You'
+                ? <span className={styles.textUnderline}><b>You</b></span>
                 : truncateStr(seller || '', 15)}
             </span>
           </div>
@@ -338,6 +339,7 @@ export default function NFTCard({
             >
               {editPriceLoading ? (
                 <BeatLoader
+                  size={8}
                   className={styles.chainErrorLoading}
                   color="#36d7b7"
                 />
@@ -354,6 +356,7 @@ export default function NFTCard({
             >
               {cancelListingLoading ? (
                 <BeatLoader
+                  size={8}
                   className={styles.chainErrorLoading}
                   color="#36d7b7"
                 />
@@ -371,11 +374,12 @@ export default function NFTCard({
             onClick={() => {
               buyItem();
             }}
-            className={styles.nftCardBtn}
+            className={[styles.nftCardBtn, styles.nftBtnBuy].join(' ')}
             disabled={buyItemLoading}
           >
             {buyItemLoading ? (
               <BeatLoader
+                size={8}
                 className={styles.chainErrorLoading}
                 color="#36d7b7"
               />
