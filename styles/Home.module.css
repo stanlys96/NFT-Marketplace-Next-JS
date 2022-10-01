@@ -7,8 +7,40 @@
   min-height: 90vh;
 }
 
+.chainErrorLoadingCollection {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.alignRight {
+  display: block;
+}
+
+.textUnderline {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);;
+}
+
+.modal-open {
+  overflow: hidden;
+}
+
+.swalParagraph {
+  padding: 0 0 7.5px;
+  margin: 0;
+}
+
 .alignLeft {
   /* text-align: left; */
+}
+
+.swal-text {
+  overflow: hidden;
+}
+
+.swal-alert,
+.swal2-shown {
+  overflow: hidden;
 }
 
 .container::-webkit-scrollbar {
@@ -22,9 +54,7 @@
 }
 
 .chainErrorLoading {
-  display: block;
-  margin: 0 auto;
-  text-align: center;
+  margin-left: 10px;
 }
 
 .navbar ::placeholder {
@@ -145,11 +175,24 @@
     rgba(255, 255, 255, 0),
     rgba(255, 255, 255, 0)
   );
-  color: #fff;
   border: 2px solid transparent;
+  border-radius: 10px;
+}
+
+.nftCard:hover .nftBtnBuy {
   border-image: linear-gradient(#b75cff, #671ae4);
   border-image-slice: 1;
-  border-radius: 10px;
+  color: #fff;
+}
+
+.nftCard:hover .nftBtnCancel {
+  border-image: linear-gradient(#A71D31, #3F0D12);
+  border-image-slice: 1;
+}
+
+.nftCard:hover .nftBtnEditPrice {
+  border-image: linear-gradient(#FFDD00, #FBB034);
+  border-image-slice: 1;
 }
 
 .nftCard:hover .nftCardBuy {
@@ -181,7 +224,6 @@
 }
 
 .nftCardBtn {
-  background-image: linear-gradient(#b75cff, #671ae4);
   width: 100%;
   text-align: center;
   padding: 10px;
@@ -189,18 +231,24 @@
   color: #fff;
   cursor: pointer;
   border: 2px solid transparent;
+}
+
+.nftBtnBuy {
+  background-image: linear-gradient(#b75cff, #671ae4);
   border-image: linear-gradient(#b75cff, #671ae4);
   border-image-slice: 1;
 }
 
 .nftBtnEditPrice {
-  background-image: linear-gradient(#b75cff, #671ae4);
-  color: #fff;
+  background-image: linear-gradient(#FFDD00, #FBB034);
+  border-image: linear-gradient(#FFDD00, #FBB034);
+  border-image-slice: 1;
 }
 
 .nftBtnCancel {
-  background-image: linear-gradient(#b75cff, #671ae4);
-  color: #fff;
+  background-image: linear-gradient(#A71D31, #3F0D12);
+  border-image: linear-gradient(#A71D31, #3F0D12);
+  border-image-slice: 1;
 }
 
 .innerNftCardTransparent {
@@ -236,6 +284,12 @@
   justify-content: center;
   align-items: center;
   color: #fff;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .nftFormContainer {

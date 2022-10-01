@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useMoralis } from 'react-moralis';
 import { BiSearchAlt } from 'react-icons/bi';
 import Link from 'next/link';
+import Swal from 'sweetalert2';
 
 const truncateStr = (fullStr, strLen) => {
   if (fullStr.length <= strLen) return fullStr;
@@ -68,15 +69,22 @@ export default function Header() {
       ) : (
         <button
           onClick={async () => {
-            await enableWeb3();
-
-            if (typeof window !== 'undefined') {
+            const res = await enableWeb3();
+            console.log(res, "<<<<");
+            if (!res) {
+              Swal.fire({
+                title: "You don't have Metamask downloaded!",
+                html: "Please download Metamask at <a href='https://metamask.io/download/' target='_blank'>https://metamask.io/download/</a>",
+                scrollbarPadding: 0,
+              });
+            }
+            if (typeof window !== 'undefined' && res) {
               window.localStorage.setItem('connected', 'injected');
             }
           }}
           className={styles.navbarBtn}
         >
-          Select Wallet
+          Metamask Login
         </button>
       )}
     </nav>

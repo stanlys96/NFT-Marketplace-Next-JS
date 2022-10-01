@@ -98,9 +98,9 @@ export default function Collection() {
 
   return (
     <div className={styles.collection}>
-      <p className={styles.collectionTitle}>Collection</p>
+      <p className={styles.collectionTitle}>NFT Collections!</p>
       <p className={styles.collectionDescription}>
-        Lorem ipsum dolor sit amet, consectetur
+        A platform for buying and selling NFTs!
       </p>
       <div
         className={
@@ -113,7 +113,7 @@ export default function Collection() {
       >
         {loading ? (
           <div>
-            <BeatLoader className={styles.chainErrorLoading} color="#36d7b7" />
+            <BeatLoader className={styles.chainErrorLoadingCollection} color="#36d7b7" />
             <p className={styles.chainError}>Loading NFTs... Please wait...</p>
           </div>
         ) : nftList.length === 0 ? (
