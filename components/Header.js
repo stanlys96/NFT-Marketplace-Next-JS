@@ -58,9 +58,8 @@ export default function Header() {
         <BiSearchAlt />
         <input type="text" placeholder="Search items and collections"></input>
       </div>
-      <Link href="#">Collections</Link>
+      <Link href="/mint-dogie">Mint Dogie</Link>
       <Link href="/sell-nft">Sell NFT</Link>
-      <Link href="#">FAQ</Link>
       {account ? (
         <div className="ml-auto py-2 px-4">
           Connected to {account.slice(0, 6)}...
@@ -70,7 +69,7 @@ export default function Header() {
         <button
           onClick={async () => {
             const res = await enableWeb3();
-            console.log(res, "<<<<");
+            console.log(res, '<<<<');
             if (!res) {
               Swal.fire({
                 title: "You don't have Metamask downloaded!",

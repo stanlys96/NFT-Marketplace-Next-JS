@@ -258,6 +258,7 @@ export default function NFTCard({
     <div>
       <div className={styles.nftCard}>
         <div
+          className={styles.nftCardWrapper}
           onClick={() => {
             Swal.fire({
               title: 'NFT Details (Goerli Network)',
