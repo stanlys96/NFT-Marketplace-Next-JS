@@ -232,7 +232,7 @@ export default function NFTCard({
         <div
           onClick={() => {
             Swal.fire({
-              title: 'NFT Details (Rinkeby Network)',
+              title: 'NFT Details (Goerli Network)',
               html: `<div class=${styles.alignLeft}><b>NFT Address:</b> ${nftAddress}<br/>
                     <b>Token ID:</b> ${tokenId}<br/>
                     <b>NFT Name:</b> ${tokenName}<br/>
@@ -271,7 +271,7 @@ export default function NFTCard({
           </div>
         </div>
         {chainString in networkMapping === false ? (
-          <p>Please connect to Rinkeby Testnet</p>
+          <p>Please connect to Goerli Testnet</p>
         ) : !account ? (
           <p>Please login with your metamask account</p>
         ) : seller.toLowerCase() === (account ? account.toLowerCase() : '') ? (
@@ -360,7 +360,7 @@ export default function NFTCard({
             </button>
           </div>
         ) : chainString in networkMapping === false ? (
-          <p>Please connect to Rinkeby Testnet</p>
+          <p>Please connect to Goerli Testnet</p>
         ) : !account ? (
           <p>Please login with your metamask account</p>
         ) : (

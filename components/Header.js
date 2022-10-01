@@ -4,9 +4,22 @@ import { useMoralis } from 'react-moralis';
 import { BiSearchAlt } from 'react-icons/bi';
 import Link from 'next/link';
 
-export default function Header() {
-  const dummy = 'jasldkjalsdjaklsjdlkasjdlkajsdlkajsd';
+const truncateStr = (fullStr, strLen) => {
+  if (fullStr.length <= strLen) return fullStr;
 
+  const separator = '...';
+  const seperatorLength = separator.length;
+  const charsToShow = strLen - seperatorLength;
+  const frontChars = Math.ceil(charsToShow / 2);
+  const backChars = Math.floor(charsToShow / 2);
+  return (
+    fullStr.substring(0, frontChars) +
+    separator +
+    fullStr.substring(fullStr.length - backChars)
+  );
+};
+
+export default function Header() {
   const {
     enableWeb3,
     isWeb3Enabled,

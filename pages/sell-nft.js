@@ -50,17 +50,17 @@ export default function Home() {
         params: {
           abi: nftAbi,
           contractAddress: formNftAddress,
-          functionName: "ownerOf",
+          functionName: 'ownerOf',
           params: {
             tokenId: formTokenId,
-          }
+          },
         },
         onError: (error) => {
-          console.log(error, " <<< WALAO");
+          console.log(error, ' <<< WALAO');
           setLoading(false);
         },
       });
-      let tokenIdOwner = !ownerOfTokenId ? "" : ownerOfTokenId;
+      let tokenIdOwner = !ownerOfTokenId ? '' : ownerOfTokenId;
       if (tokenIdOwner.toLowerCase() !== account.toLowerCase()) {
         Swal.fire({
           icon: 'error',
@@ -69,7 +69,8 @@ export default function Home() {
         });
         setLoading(false);
       } else {
-        const url = 'https://server-nft-marketplace.herokuapp.com/checkNftAddressTokenId';
+        const url =
+          'https://server-nft-marketplace.herokuapp.com/checkNftAddressTokenId';
         let responseResult = [];
         const response = await axios.post(url, {
           nftAddress: formNftAddress,
@@ -88,7 +89,9 @@ export default function Home() {
             console.log('Approving...');
             const nftAddress = formNftAddress;
             const tokenId = formTokenId;
-            const price = ethers.utils.parseUnits(formPrice, 'ether').toString();
+            const price = ethers.utils
+              .parseUnits(formPrice, 'ether')
+              .toString();
 
             const approveOptions = {
               abi: nftAbi,
@@ -113,7 +116,7 @@ export default function Home() {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: "API Status Error!",
+            text: 'API Status Error!',
           });
           setLoading(false);
         }
@@ -299,21 +302,34 @@ export default function Home() {
               placeholder="Price"
               id="price"
               name="price"
-              step="0.1"
+              step="0.01"
               required
               onChange={(event) => {
                 setFormPrice(event.target.value);
               }}
             />
           </div>
-          {!account ? <span className={styles.chainError}>No Account Connected</span> : chainString in networkMapping == false ? <span className={styles.chainError}>The connected chain is not available on this marketplace.<br/>Please
-              switch to Rinkeby Testnet.</span> : <button className={styles.sellNftBtn} disabled={loading}>
-            {loading ? (
-                <ClockLoader className={styles.chainErrorLoading} size={30} color="#36d7b7" />
+          {!account ? (
+            <span className={styles.chainError}>No Account Connected</span>
+          ) : chainString in networkMapping == false ? (
+            <span className={styles.chainError}>
+              The connected chain is not available on this marketplace.
+              <br />
+              Please switch to Goerli Testnet.
+            </span>
+          ) : (
+            <button className={styles.sellNftBtn} disabled={loading}>
+              {loading ? (
+                <ClockLoader
+                  className={styles.chainErrorLoading}
+                  size={30}
+                  color="#36d7b7"
+                />
               ) : (
-              <span>Sell NFT</span>
-            )}
-          </button>}
+                <span>Sell NFT</span>
+              )}
+            </button>
+          )}
         </form>
       }
       {!account ? (
@@ -343,7 +359,11 @@ export default function Home() {
               }}
             >
               {withdrawLoading ? (
-                <ClockLoader className={styles.chainErrorLoading} size={30} color="#36d7b7" />
+                <ClockLoader
+                  className={styles.chainErrorLoading}
+                  size={30}
+                  color="#36d7b7"
+                />
               ) : (
                 'Withdraw'
               )}
