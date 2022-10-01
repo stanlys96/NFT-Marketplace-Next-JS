@@ -17,9 +17,10 @@ export function DogieCard({ imgUrl, name }) {
     <div
       onClick={() => {
         Swal.fire({
+          title: 'Goerli Network',
           html: `<div>
             <div class=${styles.swalParagraph}>NFT Address: ${basicNftAddress}</div>
-            <div class=${styles.swalParagraph}><b>An adorable ${name} pup!</b></div>
+            <div class=${styles.swalParagraph}>An adorable ${name} pup!</div>
           <div>`,
           imageUrl: imgUrl,
           imageWidth: 150,

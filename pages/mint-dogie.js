@@ -74,9 +74,13 @@ export default function Home() {
         ))}
       </div>
       {chainString in networkMapping === false ? (
-        <p>Please connect to Goerli Testnet</p>
+        <p className={styles.chainErrorText}>
+          Please connect to Goerli Testnet
+        </p>
       ) : !account ? (
-        <p>Please login with your metamask account</p>
+        <p className={styles.chainErrorText}>
+          Please login with your metamask account
+        </p>
       ) : (
         <button
           onClick={() => {

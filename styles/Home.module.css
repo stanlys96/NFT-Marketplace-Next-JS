@@ -133,6 +133,12 @@
   margin-top: 50px !important;
 }
 
+.chainErrorText {
+  margin-top: 40px !important;
+  color: #fff;
+  font-size: 25px;
+}
+
 .dogieCollectionContainer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
