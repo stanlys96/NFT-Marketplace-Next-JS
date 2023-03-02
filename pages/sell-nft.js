@@ -1,46 +1,46 @@
-import styles from '../styles/Home.module.css';
-import { Form, useNotification, Button } from 'web3uikit';
-import { useMoralis, useWeb3Contract } from 'react-moralis';
-import { ethers } from 'ethers';
-import nftAbi from '../constants/BasicNft.json';
-import nftMarketplaceAbi from '../constants/NftMarketplace.json';
-import networkMapping from '../constants/networkMapping.json';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import ClipLoader from 'react-spinners/ClipLoader';
-import axios from 'axios';
-import { ClockLoader } from 'react-spinners';
-import Swal from 'sweetalert2';
+import styles from "../styles/Home.module.css";
+import { Form, useNotification, Button } from "web3uikit";
+import { useMoralis, useWeb3Contract } from "react-moralis";
+import { ethers } from "ethers";
+import nftAbi from "../constants/BasicNft.json";
+import nftMarketplaceAbi from "../constants/NftMarketplace.json";
+import networkMapping from "../constants/networkMapping.json";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import ClipLoader from "react-spinners/ClipLoader";
+import axios from "axios";
+import { ClockLoader } from "react-spinners";
+import Swal from "sweetalert2";
 
 const override = {
-  display: 'block',
-  margin: '0 auto',
-  borderColor: 'red',
+  display: "block",
+  margin: "0 auto",
+  borderColor: "red",
 };
 
 export default function Home() {
   const router = useRouter();
   const { chainId, account, isWeb3Enabled, Moralis } = useMoralis();
-  const chainString = chainId ? parseInt(chainId, 16).toString() : '31337';
+  const chainString = chainId ? parseInt(chainId, 16).toString() : "31337";
   const marketplaceAddress =
     chainString in networkMapping
       ? networkMapping[chainString].NftMarketplace[
           networkMapping[chainString].NftMarketplace.length - 1
         ]
-      : '';
+      : "";
   const dispatch = useNotification();
-  const [proceeds, setProceeds] = useState('0');
-  const [proceedsValue, setProceedsValue] = useState('0');
-  const [formNftAddress, setFormNftAddress] = useState('');
-  const [formTokenId, setFormTokenId] = useState('');
-  const [formPrice, setFormPrice] = useState('0');
+  const [proceeds, setProceeds] = useState("0");
+  const [proceedsValue, setProceedsValue] = useState("0");
+  const [formNftAddress, setFormNftAddress] = useState("");
+  const [formTokenId, setFormTokenId] = useState("");
+  const [formPrice, setFormPrice] = useState("0");
   const [loading, setLoading] = useState(false);
   const [approvingLoading, setApprovingLoading] = useState(false);
   const [listingLoading, setListingLoading] = useState(false);
   const [withdrawLoading, setWithdrawLoading] = useState(false);
-  const [imageURI, setImageURI] = useState('');
-  const [tokenName, setTokenName] = useState('');
-  const [tokenDescription, setTokenDescription] = useState('');
+  const [imageURI, setImageURI] = useState("");
+  const [tokenName, setTokenName] = useState("");
+  const [tokenDescription, setTokenDescription] = useState("");
 
   const { runContractFunction } = useWeb3Contract();
 
@@ -52,84 +52,56 @@ export default function Home() {
         params: {
           abi: nftAbi,
           contractAddress: formNftAddress,
-          functionName: 'ownerOf',
+          functionName: "ownerOf",
           params: {
             tokenId: formTokenId,
           },
         },
         onError: (error) => {
-          console.log(error, ' <<< WALAO');
+          console.log(error, " <<< WALAO");
           setLoading(false);
         },
       });
-      let tokenIdOwner = !ownerOfTokenId ? '' : ownerOfTokenId;
+      let tokenIdOwner = !ownerOfTokenId ? "" : ownerOfTokenId;
       console.log(account);
-      console.log(tokenIdOwner, '<<<<<');
+      console.log(tokenIdOwner, "<<<<<");
       if (tokenIdOwner.toLowerCase() !== account.toLowerCase()) {
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'You are not the owner of the NFT!',
+          icon: "error",
+          title: "Oops...",
+          text: "You are not the owner of the NFT!",
         });
         setLoading(false);
       } else {
-        const url =
-          'https://server-nft-marketplace.herokuapp.com/checkNftAddressTokenId';
-        let responseResult = [];
-        const response = await axios.post(url, {
-          nftAddress: formNftAddress,
-          tokenId: formTokenId,
-        });
-        if (response.status === 200) {
-          responseResult = response.data;
-          if (responseResult.length > 0) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Oops...',
-              text: 'NFT Already Listed!',
-            });
+        console.log("Approving...");
+        const nftAddress = formNftAddress;
+        const tokenId = formTokenId;
+        const price = ethers.utils.parseUnits(formPrice, "ether").toString();
+
+        const approveOptions = {
+          abi: nftAbi,
+          contractAddress: nftAddress,
+          functionName: "approve",
+          params: {
+            to: marketplaceAddress,
+            tokenId: tokenId,
+          },
+        };
+
+        await runContractFunction({
+          params: approveOptions,
+          onSuccess: (tx) =>
+            handleApproveSuccess(tx, nftAddress, tokenId, price),
+          onError: (error) => {
+            console.log(error);
             setLoading(false);
-          } else {
-            console.log('Approving...');
-            const nftAddress = formNftAddress;
-            const tokenId = formTokenId;
-            const price = ethers.utils
-              .parseUnits(formPrice, 'ether')
-              .toString();
-
-            const approveOptions = {
-              abi: nftAbi,
-              contractAddress: nftAddress,
-              functionName: 'approve',
-              params: {
-                to: marketplaceAddress,
-                tokenId: tokenId,
-              },
-            };
-
-            await runContractFunction({
-              params: approveOptions,
-              onSuccess: (tx) =>
-                handleApproveSuccess(tx, nftAddress, tokenId, price),
-              onError: (error) => {
-                console.log(error);
-                setLoading(false);
-              },
-            });
-          }
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'API Status Error!',
-          });
-          setLoading(false);
-        }
+          },
+        });
       }
     } catch (e) {
       Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
+        icon: "error",
+        title: "Oops...",
         text: e.message,
       });
       setLoading(false);
@@ -140,12 +112,12 @@ export default function Home() {
     setApprovingLoading(true);
     await tx.wait(1);
     setApprovingLoading(false);
-    console.log('Ok! Now time to list');
-    console.log('Nice!');
+    console.log("Ok! Now time to list");
+    console.log("Nice!");
     const listOptions = {
       abi: nftMarketplaceAbi,
       contractAddress: marketplaceAddress,
-      functionName: 'listItem',
+      functionName: "listItem",
       params: {
         nftAddress: nftAddress,
         tokenId: tokenId,
@@ -169,27 +141,26 @@ export default function Home() {
       params: {
         abi: nftAbi,
         contractAddress: formNftAddress,
-        functionName: 'tokenURI',
+        functionName: "tokenURI",
         params: {
           tokenId: formTokenId,
         },
-        onSuccess: () => console.log('success!'),
+        onSuccess: () => console.log("success!"),
         onError: (error) => {
           console.log(error);
         },
       },
     });
-    console.log(tokenURI, ' HEY <<<');
-    const url = 'https://server-nft-marketplace.herokuapp.com/insertItemListed';
-    let imageURIURLTemp = '';
-    let tokenNameTemp = '';
-    let tokenDescriptionTemp = '';
+    console.log(tokenURI, " HEY <<<");
+    let imageURIURLTemp = "";
+    let tokenNameTemp = "";
+    let tokenDescriptionTemp = "";
     if (tokenURI) {
       // IPFS Gateway: A server that will return IPFS files from a "normal" URL.
-      const requestURL = tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
+      const requestURL = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
       const tokenURIResponse = await (await fetch(requestURL)).json();
       const imageURI = tokenURIResponse.image;
-      const imageURIURL = imageURI.replace('ipfs://', 'https://ipfs.io/ipfs/');
+      const imageURIURL = imageURI.replace("ipfs://", "https://ipfs.io/ipfs/");
       imageURIURLTemp = imageURIURL;
       tokenNameTemp = tokenURIResponse.name;
       tokenDescriptionTemp = tokenURIResponse.description;
@@ -201,50 +172,29 @@ export default function Home() {
       // Have the world adopt IPFS
       // Build our own IPFS gateway
     }
-    console.log(imageURIURLTemp, ' <??ASDASDASD');
+    console.log(imageURIURLTemp, " <??ASDASDASD");
     await tx.wait(1);
     setListingLoading(false);
-    try {
-      // setLoading(true);
-      const response = await axios.post(url, {
-        nftAddress: formNftAddress,
-        tokenId: formTokenId,
-        price: formPrice,
-        seller: account,
-        imageUrl: imageURIURLTemp,
-        tokenName: tokenNameTemp,
-        tokenDescription: tokenDescriptionTemp,
-      });
-      if (response.status === 200) {
-        // setLoading(false);
-        console.log(response, ' <<<<');
-      } else {
-        // setLoading(false);
-      }
-    } catch (e) {
-      // setLoading(false);
-      console.log(e);
-    }
     dispatch({
-      type: 'success',
-      message: 'NFT listing',
-      title: 'NFT listed',
-      position: 'topR',
+      type: "success",
+      message: "NFT listing",
+      title: "NFT listed",
+      position: "topR",
     });
     setLoading(false);
-    router.push('/');
+    router.push("/");
   }
 
   const handleWithdrawSuccess = async (tx) => {
     const txReceipt = await tx.wait(1);
     console.log(txReceipt);
     dispatch({
-      type: 'success',
-      message: 'Withdrawing proceeds',
-      position: 'topR',
+      type: "success",
+      message: "Withdrawing proceeds",
+      position: "topR",
     });
     setLoading(false);
-    setProceedsValue('WALAO');
+    setProceedsValue("WALAO");
     setWithdrawLoading(false);
   };
 
@@ -253,7 +203,7 @@ export default function Home() {
       params: {
         abi: nftMarketplaceAbi,
         contractAddress: marketplaceAddress,
-        functionName: 'getProceeds',
+        functionName: "getProceeds",
         params: {
           seller: account,
         },
@@ -271,14 +221,14 @@ export default function Home() {
 
   useEffect(() => {
     if (isWeb3Enabled) {
-      if (marketplaceAddress !== '') {
+      if (marketplaceAddress !== "") {
         setupUI();
       }
     }
   }, [proceeds, account, isWeb3Enabled, chainId, proceedsValue, chainId]);
 
   return (
-    <div className={[styles.container, styles.sellNftContainer].join(' ')}>
+    <div className={[styles.container, styles.sellNftContainer].join(" ")}>
       {
         <form className={styles.sellNftForm} onSubmit={approveAndList}>
           <label className={styles.sellNftCaption}>Sell your NFT!</label>
@@ -346,7 +296,7 @@ export default function Home() {
                     className={
                       listingLoading || approvingLoading
                         ? styles.chainErrorLoading
-                        : ''
+                        : ""
                     }
                     size={30}
                     color="#36d7b7"
@@ -363,8 +313,8 @@ export default function Home() {
         <div></div>
       ) : chainString in networkMapping ? (
         <div className={styles.proceedsContainer}>
-          <div>Withdraw {ethers.utils.formatUnits(proceeds, 'ether')} ETH</div>
-          {proceeds != '0' ? (
+          <div>Withdraw {ethers.utils.formatUnits(proceeds, "ether")} ETH</div>
+          {proceeds != "0" ? (
             <button
               className={styles.sellNftBtn}
               disabled={withdrawLoading}
@@ -374,7 +324,7 @@ export default function Home() {
                   params: {
                     abi: nftMarketplaceAbi,
                     contractAddress: marketplaceAddress,
-                    functionName: 'withdrawProceeds',
+                    functionName: "withdrawProceeds",
                     params: {},
                   },
                   onError: (error) => {
@@ -388,7 +338,7 @@ export default function Home() {
               {withdrawLoading ? (
                 <ClockLoader size={30} color="#36d7b7" />
               ) : (
-                'Withdraw'
+                "Withdraw"
               )}
             </button>
           ) : (

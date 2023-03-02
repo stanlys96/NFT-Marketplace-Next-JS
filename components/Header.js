@@ -1,14 +1,15 @@
-import styles from '../styles/Home.module.css';
-import { useEffect } from 'react';
-import { useMoralis } from 'react-moralis';
-import { BiSearchAlt } from 'react-icons/bi';
-import Link from 'next/link';
-import Swal from 'sweetalert2';
+import styles from "../styles/Home.module.css";
+import { useEffect } from "react";
+import { useMoralis } from "react-moralis";
+import { BiSearchAlt } from "react-icons/bi";
+import Link from "next/link";
+import Swal from "sweetalert2";
+import { marketplaceRepo } from "../helpers/marketplace-repo";
 
 const truncateStr = (fullStr, strLen) => {
   if (fullStr.length <= strLen) return fullStr;
 
-  const separator = '...';
+  const separator = "...";
   const seperatorLength = separator.length;
   const charsToShow = strLen - seperatorLength;
   const frontChars = Math.ceil(charsToShow / 2);
@@ -33,19 +34,19 @@ export default function Header() {
   useEffect(() => {
     if (
       !isWeb3Enabled &&
-      typeof window !== 'undefined' &&
-      window.localStorage.getItem('connected') == 'injected'
+      typeof window !== "undefined" &&
+      window.localStorage.getItem("connected") == "injected"
     ) {
       enableWeb3();
     }
-  }, [isWeb3Enabled]);
+  }, []);
 
   useEffect(() => {
     Moralis.onAccountChanged((account) => {
       if (account == null) {
         deactivateWeb3();
-        if (typeof window !== 'undefined') {
-          window.localStorage.removeItem('connected');
+        if (typeof window !== "undefined") {
+          window.localStorage.removeItem("connected");
         }
       }
     });
@@ -60,16 +61,12 @@ export default function Header() {
       </div>
       <Link href="/mint-dogie">Mint Dogie</Link>
       <Link href="/sell-nft">Sell NFT</Link>
-      {account ? (
-        <div className="ml-auto py-2 px-4">
-          Connected to {account.slice(0, 6)}...
-          {account.slice(account.length - 4)}
-        </div>
-      ) : (
-        <button
-          onClick={async () => {
+
+      <button
+        onClick={async () => {
+          if (!isWeb3Enabled) {
             const res = await enableWeb3();
-            console.log(res, '<<<<');
+            console.log(res, "<<<<");
             if (!res) {
               Swal.fire({
                 title: "You don't have Metamask downloaded!",
@@ -77,15 +74,22 @@ export default function Header() {
                 scrollbarPadding: 0,
               });
             }
-            if (typeof window !== 'undefined' && res) {
-              window.localStorage.setItem('connected', 'injected');
+            if (typeof window !== "undefined" && res) {
+              window.localStorage.setItem("connected", "injected");
             }
-          }}
-          className={styles.navbarBtn}
-        >
-          Metamask Login
-        </button>
-      )}
+          } else {
+            // await Moralis.enableWeb3();
+            await deactivateWeb3();
+          }
+        }}
+        className={styles.navbarBtn}
+      >
+        {account
+          ? `Connected to ${account.slice(0, 6)}... ${account.slice(
+              account.length - 4
+            )}`
+          : "Metamask Login"}
+      </button>
     </nav>
   );
 }
