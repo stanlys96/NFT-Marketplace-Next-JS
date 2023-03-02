@@ -125,7 +125,7 @@ export default function Collection() {
         setNftList([]);
       }
     }
-  }, [isWeb3Enabled]);
+  }, [isWeb3Enabled, account, chainId]);
 
   useEffect(() => {
     if (isWeb3Enabled) {
@@ -156,14 +156,23 @@ export default function Collection() {
       </p>
       <div
         className={
-          !chainString in networkMapping || loading
+          chainString in networkMapping === false || loading || !account
             ? ""
             : nftList.length
             ? styles.nftContainer
             : ""
         }
       >
-        {loading ? (
+        {chainString in networkMapping === false ? (
+          <p>
+            Please connect to Goerli Testnet to see NFTs in this marketplace
+          </p>
+        ) : !account ? (
+          <p>
+            Please login with your metamask account to see NFTs in this
+            marketplace
+          </p>
+        ) : loading ? (
           <div>
             <BeatLoader
               className={styles.chainErrorLoadingCollection}
